@@ -1,24 +1,28 @@
 <template>
     <div>
         <a-tabs defaultActiveKey="1" @change="callback">
-            <a-tab-pane tab="报课订单" key="1">
-                <card-item></card-item>
+            <a-tab-pane tab="地点列表" key="1">
+                <list-item></list-item>
             </a-tab-pane>
-            <a-tab-pane tab="历史订单" key="2" forceRender>
-                <card-item></card-item>
+            <a-tab-pane tab="新建地点" key="2" forceRender>
+                <list-add></list-add>
             </a-tab-pane>
         </a-tabs>
     </div>
 </template>
 <script>
-import cardItem from './card'
+
+import listItem from './listItem'
+import listAdd from './listAdd'
 export default {
   data () {
     return {
+        
     }
   },
   components: {
-      cardItem
+    listItem,
+    listAdd
   },
   methods: {
     callback (key) {

@@ -12,15 +12,7 @@
                 >
                     <a-input placeholder='请输入' />
                 </a-form-item>
-                <a-form-item
-                :labelCol="formItemLayout.labelCol"
-                :wrapperCol="formItemLayout.wrapperCol"
-                label='年龄'
-                fieldDecoratorId="age"
-                :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入需要录入的年龄' }]}"
-                >
-                    <a-input type="number" placeholder='请输入需要录入的年龄' />
-                </a-form-item>
+
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
@@ -45,64 +37,24 @@
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
-                label='状态：'
-                fieldDecoratorId="gender"
+                label='跟进状态：'
+                fieldDecoratorId="state"
                 >
-                    <a-select @change="handleChange">
-                        <a-select-option value="男">普通学员</a-select-option>
-                        <a-select-option value="女">会员学员</a-select-option>
-                    </a-select>
+                    <a-textarea placeholder="每次跟进都会记录，请直接填写当前记录" :autosize="{ minRows: 2, maxRows: 6 }" />
                 </a-form-item>
 
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
-                label='类型：'
-                fieldDecoratorId="gender">
-                    <a-select defaultValue="男" @change="handleChange">
-                        <a-select-option value="男">类型1</a-select-option>
-                        <a-select-option value="女">类型2</a-select-option>
+                label='权限：'
+                fieldDecoratorId="deal"
+                >
+                     <a-select defaultValue="" @change="handleChange">
+                        <a-select-option value="是">是</a-select-option>
+                        <a-select-option value="否">否</a-select-option>
                     </a-select>
                 </a-form-item>
-
-                <a-form-item
-                :labelCol="formItemLayout.labelCol"
-                :wrapperCol="formItemLayout.wrapperCol"
-                label='节数：'
-                fieldDecoratorId="money"
-                >
-                    <a-input type="number" placeholder='请输入' />
-                </a-form-item>
-
-                <a-form-item
-                    :labelCol="formItemLayout.labelCol"
-                    :wrapperCol="formItemLayout.wrapperCol"
-                    label='时间：'
-                    fieldDecoratorId="money"
-                    >
-                    <a-date-picker class="form-item-picker" @change="onChange" />
-                </a-form-item>
-
-                 <a-form-item
-                    :labelCol="formItemLayout.labelCol"
-                    :wrapperCol="formItemLayout.wrapperCol"
-                    label='场地：'
-                    fieldDecoratorId="money"
-                    >
-                     <a-select @change="handleChange">
-                        <a-select-option value="男">场地1</a-select-option>
-                        <a-select-option value="女">场地2</a-select-option>
-                    </a-select>
-                </a-form-item>
-
-                <a-form-item
-                :labelCol="formItemLayout.labelCol"
-                :wrapperCol="formItemLayout.wrapperCol"
-                label='备注：'
-                fieldDecoratorId="note"
-                >
-                    <a-textarea placeholder="请输入" :autosize="{ minRows: 2, maxRows: 6 }" />
-                </a-form-item>
+                
                 <div>
                     <a-button type='primary' class="btn-item add-btn" @click="checkAdd">提交</a-button>
                     <a-button class="btn-item cancel-btn" @click="checkCancel">取消</a-button>
@@ -167,10 +119,6 @@ export default {
     }
     .add-btn {
         margin-right: 5vw;
-    }
-
-    .form-item-picker{
-        width: 100%;
     }
 }   
 </style>

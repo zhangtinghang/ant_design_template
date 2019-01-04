@@ -1,61 +1,38 @@
 <template>
     <div class="user-weaaper">
-        <div class="form-search">
-            <div class="form">
-                <a-form layout='inline' @submit="handleSubmit" :autoFormCreate="(form)=>{this.form = form}">
-                    <template v-if="form">
-                        <a-form-item label='用户查询：' fieldDecoratorId="userSelect">
-                            <a-input placeholder='请输入'></a-input>
-                        </a-form-item>
-
-                        <a-form-item
-                            label='状态查询：'>
-                            <a-select placeholder= '新用户'>
-                                <a-select-option value='1'>Option 1</a-select-option>
-                                <a-select-option value='2'>Option 2</a-select-option>
-                                <a-select-option value='3'>Option 3</a-select-option>
-                            </a-select>
-                        </a-form-item>
-
-                        <a-form-item>
-                            <a-button type='primary' htmlType='submit' :disabled="hasErrors(form.getFieldsError())">
-                                查询
-                            </a-button>
-                        </a-form-item>
-                    </template>
-                </a-form>
-            </div>
-            <div class="addUser">
-                <a-button type="primary">新增用户</a-button>
-            </div>
-        </div>
         <div class="wapper">
-            <a-table :columns="columns" :pagination="false" :dataSource="data" :scroll="{ x: 1500}">
-                <div slot="nameItem" slot-scope="text, record">
-                    <span class="changeItem">{{text}}</span>
-                </div>
-                <div slot="resiItem" slot-scope="text, record">
-                    <span class="changeItem">{{text}}</span>
+            <a-table :columns="columns" :pagination="false" :dataSource="data" :scroll="{ x: '100%'}">
+                <div slot="images" class="img-wapper" slot-scope="text, record">
+                    <img :src="text" alt="轮播图片" />
                 </div>
                 <div slot="change" slot-scope="text, record">
-                    <span class="changeItem" @click="showModal">详情</span>
+                    <div class="opera-item"><a-button type="primary">启用</a-button></div>
+                    <div class="opera-item"><a-button type="primary">编辑</a-button></div>
+                    <div class="opera-item"><a-button type="danger">删除</a-button></div>
                 </div>
             </a-table>
         </div>
         <div class="footer-pg">
-                <div class="footer-pgLeft">
-                    <span>共400条记录 第 1 / 80页</span>
-                </div>
-                <div class="footer-pgRight">
-                    <a-pagination showSizeChanger @showSizeChange="onShowSizeChange" :defaultCurrent="3" :total="500" />
-                </div>
+            <div class="footer-pgLeft">
+                <span>共400条记录 第 1 / 80页</span>
+            </div>
+            <div class="footer-pgRight">
+                <a-pagination showSizeChanger @showSizeChange="onShowSizeChange" :defaultCurrent="3" :total="500" />
+            </div>
         </div>
-        <a-modal title="Title" :visible="visible" @ok="handleOk" :confirmLoading="confirmLoading" @cancel="handleCancel" >
+        <a-modal
+            title="Title"
+            :visible="visible"
+            @ok="handleOk"
+            :confirmLoading="confirmLoading"
+            @cancel="handleCancel"
+            >
             <p>{{ModalText}}</p>
         </a-modal>
     </div>
 </template>
 <script>
+import imagesItem from '../../images/imgCover.png'
 function hasErrors (fieldsError) {
   return Object.keys(fieldsError).some(field => fieldsError[field])
 }
@@ -71,35 +48,36 @@ function changeTextItem (text, record, index) {
 const columns = [{
   title: '编号',
   dataIndex: 'number',
+  align: 'center'
 }, {
-  title: '姓名',
-  dataIndex: 'name',
-  scopedSlots: { customRender: 'nameItem'}
+  title: '标题',
+  dataIndex: 'content',
+  align: 'center'
 }, {
-  title: '年龄',
-  dataIndex: 'age',
+  title: '风采视频',
+  dataIndex: 'image',
+  scopedSlots: { customRender: 'images'},
+  align: 'center'
 }, {
-  title: '性别',
-  dataIndex: 'gender',
+  title: '视频介绍',
+  dataIndex: 'content',
+  align: 'center'
 }, {
-  title: '联系方式',
-  dataIndex: 'phone',
+    title: '状态',
+  dataIndex: 'type',
+  align: 'center'
 }, {
-  title: '状态',
-  dataIndex: 'state',
-}, {
-  title: '剩余课程',
-  dataIndex: 'residue',
-  scopedSlots: { customRender: 'resiItem'}
+  title: '上传人',
+  dataIndex: 'user',
+  align: 'center'
 }, {
   title: '时间',
   dataIndex: 'time',
-}, {
-  title: '场地',
-  dataIndex: 'address',
+  align: 'center'
 }, {
   title: '操作',
   dataIndex: 'operation',
+  align: 'center',
   scopedSlots: { customRender: 'change'}
 }];
 
@@ -108,21 +86,20 @@ for (let i = 0; i < 10; i++) {
   data.push({
     key: i,
     number: i,
-    name: `Edward King ${i}`,
-    age: '18',
-    gender:'男',
-    phone: '123141515',
-    state:'普通学员',
-    residue: '10',
     time: '2018/08/07 12:21',
-    address: '这是场地'
+    phone: '123141515',
+    user:'张三',
+    image: imagesItem,
+    content: '这是无数个正文内容',
+    type: '公告',
+    time: '2018-11-22',
   });
 }
 export default {
     data () {
         return {
+            imagesItem,
             hasErrors,
-            form: null,
             data,
             loading: false,
             selectedRowKeys: [],
@@ -131,12 +108,6 @@ export default {
             visible: false,
             confirmLoading: false,
         }
-    },
-    mounted () {
-        this.$nextTick(() => {
-        // To disabled submit button at the beginning.
-        this.form.validateFields()
-        })
     },
     computed: {
         hasSelected() {
@@ -211,6 +182,25 @@ export default {
     margin-right: 15px;
     cursor: pointer;
     width: 50px 0;
+}
+.opera-item{
+    margin-bottom: 10px;
+    .ant-btn-danger{
+        background-color: red;
+        color: #fff;
+    }
+}
+.opera-item:last-child{
+    margin-bottom: 0;
+}
+.img-wapper{
+    width: 150px;
+    height: 100px;
+    margin: 0 auto;
+    & > img{
+        width: 150px;
+        height: 100px;
+    }
 }
 
 .footer-pg{

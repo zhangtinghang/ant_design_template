@@ -4,13 +4,19 @@
             <div class="form">
                 <a-form layout='inline' @submit="handleSubmit" :autoFormCreate="(form)=>{this.form = form}">
                     <template v-if="form">
-                        <a-form-item label='用户查询：' fieldDecoratorId="userSelect">
-                            <a-input placeholder='请输入'></a-input>
+                        <a-form-item
+                        label='用户查询：'
+                        fieldDecoratorId="userSelect"
+                        >
+                            <a-input placeholder='请输入'>
+                            </a-input>
                         </a-form-item>
 
                         <a-form-item
-                            label='状态查询：'>
-                            <a-select placeholder= '新用户'>
+                            label='状态查询：'
+                            >
+                            <a-select 
+                            placeholder= '新用户'>
                                 <a-select-option value='1'>Option 1</a-select-option>
                                 <a-select-option value='2'>Option 2</a-select-option>
                                 <a-select-option value='3'>Option 3</a-select-option>
@@ -18,7 +24,11 @@
                         </a-form-item>
 
                         <a-form-item>
-                            <a-button type='primary' htmlType='submit' :disabled="hasErrors(form.getFieldsError())">
+                            <a-button
+                                type='primary'
+                                htmlType='submit'
+                                :disabled="hasErrors(form.getFieldsError())"
+                            >
                                 查询
                             </a-button>
                         </a-form-item>
@@ -31,14 +41,8 @@
         </div>
         <div class="wapper">
             <a-table :columns="columns" :pagination="false" :dataSource="data" :scroll="{ x: 1500}">
-                <div slot="nameItem" slot-scope="text, record">
-                    <span class="changeItem">{{text}}</span>
-                </div>
-                <div slot="resiItem" slot-scope="text, record">
-                    <span class="changeItem">{{text}}</span>
-                </div>
                 <div slot="change" slot-scope="text, record">
-                    <span class="changeItem" @click="showModal">详情</span>
+                    <span class="changeItem" @click="showModal">修改</span> <span class="changeItem" @click="showModal">成为学员</span>
                 </div>
             </a-table>
         </div>
@@ -50,7 +54,13 @@
                     <a-pagination showSizeChanger @showSizeChange="onShowSizeChange" :defaultCurrent="3" :total="500" />
                 </div>
         </div>
-        <a-modal title="Title" :visible="visible" @ok="handleOk" :confirmLoading="confirmLoading" @cancel="handleCancel" >
+        <a-modal
+            title="Title"
+            :visible="visible"
+            @ok="handleOk"
+            :confirmLoading="confirmLoading"
+            @cancel="handleCancel"
+            >
             <p>{{ModalText}}</p>
         </a-modal>
     </div>
@@ -74,30 +84,43 @@ const columns = [{
 }, {
   title: '姓名',
   dataIndex: 'name',
-  scopedSlots: { customRender: 'nameItem'}
-}, {
-  title: '年龄',
-  dataIndex: 'age',
 }, {
   title: '性别',
   dataIndex: 'gender',
 }, {
-  title: '联系方式',
-  dataIndex: 'phone',
-}, {
-  title: '状态',
-  dataIndex: 'state',
-}, {
-  title: '剩余课程',
-  dataIndex: 'residue',
-  scopedSlots: { customRender: 'resiItem'}
-}, {
-  title: '时间',
+    title: '时间',
   dataIndex: 'time',
-}, {
-  title: '场地',
-  dataIndex: 'address',
-}, {
+},{
+  title: '电话',
+  dataIndex: 'phone',
+},{
+  title: '备注',
+  dataIndex: 'note',
+  customRender: changeTextItem
+},{
+  title: '跟进状态',
+  dataIndex: 'state',
+  customRender: changeTextItem
+},{
+  title: '跟进顾问',
+  dataIndex: 'user',
+},{
+  title: '是否有效',
+  dataIndex: 'effective',
+  width: '60px'
+},{
+  title: '是否到访',
+  dataIndex: 'visit',
+  width: '60px'
+},{
+  title: '是否成交',
+  dataIndex: 'deal',
+  width: '60px'
+},{
+  title: '成交金额',
+  dataIndex: 'money',
+  width: '60px'
+},{
   title: '操作',
   dataIndex: 'operation',
   scopedSlots: { customRender: 'change'}
@@ -109,13 +132,16 @@ for (let i = 0; i < 10; i++) {
     key: i,
     number: i,
     name: `Edward King ${i}`,
-    age: '18',
     gender:'男',
-    phone: '123141515',
-    state:'普通学员',
-    residue: '10',
     time: '2018/08/07 12:21',
-    address: '这是场地'
+    phone: '123141515',
+    note: '这是一些备注信息这是一些备注信息这是一些备注信息这是一些备注信息这是一些备注信息这是一些备注信息这是一些备注信息',
+    state:'目前跟进状态目前跟进状态目前跟进状态目前跟进状态目前跟进状态',
+    user:'张三',
+    effective:'否',
+    visit: '否',
+    deal: '是',
+    money: '50'
   });
 }
 export default {
@@ -218,6 +244,9 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+.footer-pgLeft{
+
 }
 </style>
 

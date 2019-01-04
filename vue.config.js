@@ -33,6 +33,7 @@ module.exports = {
     },
     devServer: {
       before: require('./mock'),//引入mock/index.js
+      
     },
     // webpack 链接 API，用于生成和修改 webapck 配置
     // https://github.com/mozilla-neutrino/webpack-chain

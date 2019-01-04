@@ -24,6 +24,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 #components-layout-demo-custom-trigger{
-  height: 100%;
+  min-height: 100%;
 }
 </style>
