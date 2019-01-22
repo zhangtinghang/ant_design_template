@@ -25,7 +25,7 @@
                         </a-row>
                     </div>
                     <div class="content-right">
-                        <div class="right-item"><a-button class="right-item-btn" type="primary" @click="orderConfirm">订单确认</a-button></div>
+                        <div class="right-item"><a-button class="right-item-btn" type="primary" disabled>订单已确认</a-button></div>
                         <div class="right-item item-text">新用户</div>
                     </div>
                 </div>
@@ -34,37 +34,16 @@
             <div class="pagination-wapper">
                 <a-pagination v-model="current" :total="50" />
             </div>
-
-            <!-- 详情 -->
-            <a-modal :visible="isDetail"  :footer="null" width="60%">
-                <detail-form @confirmHandle="confirmHandle" @cancelHandle="cancelHandle"></detail-form>
-            </a-modal>
         </div>
 </template>
 
 <script>
-import detailForm from './edit'
  export default {
     data() {
       return {
         current: 2,
-        card:[{},{},{},{}],
-        isDetail: false
+        card:[{},{},{},{}]
       }
-    },
-    components: {
-        detailForm
-    },
-    methods: {
-        orderConfirm () {
-            this.isDetail = true
-        },
-        confirmHandle (val) {
-            console.log('获取到确认信息', val)
-        },
-        cancelHandle () {
-            this.isDetail = false
-        }
     }
   }
 </script>

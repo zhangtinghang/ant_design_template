@@ -14,12 +14,12 @@
         :labelCol="formItemLayout.labelCol"
         :wrapperCol="formItemLayout.wrapperCol"
         label='密码'
-        fieldDecoratorId="password"
+        fieldDecoratorId="pwd"
         :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入密码' }]}"
       >
         <a-input type="password" placeholder='请输入密码' />
       </a-form-item>
-      <a-form-item
+      <!-- <a-form-item
         :labelCol="formTailLayout.labelCol"
         :wrapperCol="formTailLayout.wrapperCol"
       >
@@ -30,7 +30,7 @@
           记住我
         </a-checkbox>
         <router-link to="/foo">忘记密码？</router-link>
-      </a-form-item>
+      </a-form-item> -->
       <a-form-item
         :labelCol="formTailLayout.labelCol"
         :wrapperCol="formTailLayout.wrapperCol"
@@ -72,7 +72,7 @@ export default {
             })
           }else {
             // eslint-disable-next-line
-            console.log('fail')
+            console.log('fail1')
           }
         },
       )

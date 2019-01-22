@@ -32,8 +32,8 @@ module.exports = {
     configureWebpack: (config) => {
     },
     devServer: {
-      before: require('./mock'),//引入mock/index.js
-      
+      // host: 'http://10.101.201'
+      // before: require('./mock'),//引入mock/index.js
     },
     // webpack 链接 API，用于生成和修改 webapck 配置
     // https://github.com/mozilla-neutrino/webpack-chain

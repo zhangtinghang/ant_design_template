@@ -1,13 +1,13 @@
 <template>
     <div class="form-container">
-        <div class="header-title">信息修改</div>
+        <div class="header-title">信息增加</div>
         <div class="form-wapper">
             <a-form :autoFormCreate="(form)=>{this.form = form}">
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='姓名'
-                fieldDecoratorId="name"
+                fieldDecoratorId="real_name"
                 :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入需要录入的姓名' }]}"
                 >
                     <a-input placeholder='请输入' />
@@ -25,9 +25,9 @@
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='性别'
-                fieldDecoratorId="gender"
+                fieldDecoratorId="sex"
                 >
-                    <a-select defaultValue="男" @change="handleChange">
+                    <a-select defaultValue="男">
                         <a-select-option value="男">男</a-select-option>
                         <a-select-option value="女">女</a-select-option>
                     </a-select>
@@ -55,7 +55,7 @@
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='跟进状态：'
-                fieldDecoratorId="state"
+                fieldDecoratorId="status"
                 >
                     <a-textarea placeholder="每次跟进都会记录，请直接填写当前记录" :autosize="{ minRows: 2, maxRows: 6 }" />
                 </a-form-item>
@@ -63,44 +63,44 @@
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='跟进顾问：'
-                fieldDecoratorId="consultant"
+                fieldDecoratorId="adviser"
                 >
-                    <a-select defaultValue="" @change="handleChange">
-                        <a-select-option value="男">新用户</a-select-option>
-                        <a-select-option value="女">老用户</a-select-option>
+                    <a-select defaultValue="">
+                        <a-select-option value="新用户">新用户</a-select-option>
+                        <a-select-option value="老用户">老用户</a-select-option>
                     </a-select>
                 </a-form-item>
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='是否有效：'
-                fieldDecoratorId="effective"
+                fieldDecoratorId="is_valid"
                 >
-                    <a-select defaultValue="" @change="handleChange">
-                        <a-select-option value="是">是</a-select-option>
-                        <a-select-option value="否">否</a-select-option>
+                    <a-select defaultValue="">
+                        <a-select-option value="1">是</a-select-option>
+                        <a-select-option value="0">否</a-select-option>
                     </a-select>
                 </a-form-item>
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='是否到访：'
-                fieldDecoratorId="visit"
+                fieldDecoratorId="is_visited"
                 >
-                     <a-select defaultValue="" @change="handleChange">
-                        <a-select-option value="是">是</a-select-option>
-                        <a-select-option value="否">否</a-select-option>
+                     <a-select defaultValue="">
+                        <a-select-option value="1">是</a-select-option>
+                        <a-select-option value="0">否</a-select-option>
                     </a-select>
                 </a-form-item>
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='是否成交：'
-                fieldDecoratorId="deal"
+                fieldDecoratorId="is_deal"
                 >
-                     <a-select defaultValue="" @change="handleChange">
-                        <a-select-option value="是">是</a-select-option>
-                        <a-select-option value="否">否</a-select-option>
+                     <a-select defaultValue="">
+                        <a-select-option value="1">是</a-select-option>
+                        <a-select-option value="0">否</a-select-option>
                     </a-select>
                 </a-form-item>
                 <a-form-item
@@ -124,6 +124,7 @@ const formItemLayout = {
   labelCol: { span: 4, offset: 4 },
   wrapperCol: { span: 8},
 }
+import { createMarket } from '@/api/market'
 export default {
   data () {
     return {
@@ -136,16 +137,19 @@ export default {
       this.form.validateFields(
         (err) => {
           if (!err) {
-            console.info('success')
+            console.info('success', this.form.getFieldsValue())
+            let temData = this.form.getFieldsValue()
+            temData.token = this.$store.state.user.token
+            createMarket(temData).then((data) => {
+                this.$message.success(`上传信息成功.`)
+                console.log('新增市场管理用户', data)
+            })
           }
         },
       )
     },
     checkCancel () {
-        console.log('点击取消')
-    },
-    handleChange  (e) {
-
+        this.form.resetFields()
     },
   },
 }

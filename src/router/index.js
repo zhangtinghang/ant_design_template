@@ -20,7 +20,7 @@ export const constantRouterMap = [
       component: _import('home/index'),
       name: 'dashboard'
     }]
-  }
+  },
   // {
   //   path: '/404',
   //   component: _import('errorPage/404'),
@@ -31,13 +31,6 @@ export const constantRouterMap = [
   //   component: _import('errorPage/401'),
   //   hidden: true
   // },
-]
-
-export default new Router({
-  routes: constantRouterMap
-})
-
-export const asyncRouterMap = [
   {
     path: '/market',
     component: _import('layout/Layout'),
@@ -146,6 +139,13 @@ export const asyncRouterMap = [
       name: '修改密码',
       meta: {roles: ['normal', 'admin', 'edit']}
     }]
-  },
-  { path: '*', redirect: '/404', invisible: true }
+  }
+  // { path: '*', redirect: '/404', invisible: true }
+]
+
+export default new Router({
+  routes: constantRouterMap
+})
+
+export const asyncRouterMap = [
 ]

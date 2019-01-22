@@ -25,8 +25,9 @@ const user = {
     loginByUsername ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         loginByUsername(userInfo).then(response => {
-          const token = response.data.userid
+          const token = response.token
           commit('SET_TOKEN', token)
+          commit('SET_USER', response)
           setToken(token)
           resolve()
         }).catch(error => {
@@ -34,28 +35,6 @@ const user = {
         })
       })
     },
-    // 获取用户信息
-    GetuserInfo ({ commit, state }) {
-      return new Promise((resolve, reject) => {
-        getUserInfo(state.token).then(response => {
-          // eslint-disable-next-line
-          console.log('--- 获取用户信息 ---', response)
-          if (!response.data) { // 由于mockjs 不支持自定义状态码只能这样hack
-            reject(new Error('error'))
-          }
-          const data = response.data
-          if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            commit('SET_ROLES', data.roles)
-          } else {
-            reject(new Error('getInfo: roles must be a non-null array !'))
-          }
-          commit('SET_USER', data)
-          resolve(response)
-        }).catch(error => {
-          reject(error)
-        })
-      })
-    }
     // 登出
     // LogOut({ commit, state }) {
     //   return new Promise((resolve, reject) => {

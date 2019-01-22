@@ -80,13 +80,13 @@ export default {
       this.form.validateFields(
         (err) => {
           if (!err) {
-            console.info('success')
+            console.info('success', this.form.getFieldsValue())
           }
         },
       )
     },
     checkCancel () {
-        console.log('点击取消')
+        this.form.resetFields()
     },
     handleChange  (e) {
 

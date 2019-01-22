@@ -2,6 +2,9 @@
     <div class="user-weaaper">
         <div class="wapper">
             <a-table :columns="columns" :pagination="false" :dataSource="listData" :scroll="{ x: '100%'}">
+                <div slot="images" class="img-wapper" slot-scope="text, record">
+                    <img :src="text" alt="轮播图片" />
+                </div>
                 <div slot="change" slot-scope="text, record">
                     <div class="opera-item"><a-popconfirm title="确定修改？" v-if="record.enable === 1" okText="确定" cancelText="取消" @confirm="carouselStop"><a-button>停用</a-button></a-popconfirm><a-button type="primary" v-else @click="carouselStart">启用</a-button></div>
                     <div class="opera-item"><a-button type="primary" @click="carouselEdit">编辑</a-button></div>
@@ -20,7 +23,7 @@
     </div>
 </template>
 <script>
-import { getCourse } from '@/api/list'
+import { getSite } from '@/api/site'
 
 // 表格数据
 const columns = [{
@@ -28,24 +31,21 @@ const columns = [{
   dataIndex: 'number',
   align: 'center'
 }, {
-  title: '课程名称',
+  title: '地点名称',
   dataIndex: 'real_name',
   align: 'center'
 }, {
-  title: '课程介绍',
-  dataIndex: 'intro',
+  title: '地点图片',
+  dataIndex: 'picture',
+  scopedSlots: { customRender: 'images'},
   align: 'center'
 }, {
-    title: '类型',
-  dataIndex: 'type',
-  align: 'center'
+    title: '经度',
+    dataIndex: 'latitude',
+    align: 'center'
 }, {
-  title: '节数',
-  dataIndex: 'count_',
-  align: 'center'
-}, {
-  title: '金额',
-  dataIndex: 'money',
+  title: '纬度',
+  dataIndex: 'longitude',
   align: 'center'
 }, {
   title: '操作',
@@ -53,10 +53,11 @@ const columns = [{
   align: 'center',
   scopedSlots: { customRender: 'change'}
 }];
+
 export default {
     created () {
-        getCourse().then((info) => {
-            console.log('获取课程列表信息成功', info.data)
+        getSite().then((info) => {
+            console.log('获取地理位置信息成功', info.data)
             this.listData = info.data
         })
     },

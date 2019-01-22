@@ -11,12 +11,15 @@ import store from './store'
 import './permission' // permission control
 
 Vue.use(Antd)
+
 Vue.use(VueLazyload)
 
 Vue.use(VueLazyload, {
   error: './assets/images.png',
   loading: './assets/images.png'
 })
+
+Vue.use(require('vue-moment'))
 
 Vue.config.productionTip = false
 

@@ -10,26 +10,33 @@ router.beforeEach((to, from, next) => {
     if (to.path === '/login') {
       next({ path: '/' })
     } else {
-      if (store.getters.roles.length === 0) {
-        // 获取用户数据
-        store.dispatch('GetuserInfo').then(() => {
-          // 重新计算动态路由
-          const roles = store.getters.roles
-          store.dispatch('GenerateRoutes', { roles }).then(() => { // 根据roles权限生成可访问的路由表
-            // 动态添加可访问路由表
-            router.addRoutes(store.getters.addRouters)
-            next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
-          })
-        }).catch(() => {
-        // 调用取消登录
-        // store.dispatch('FedLogOut').then(() => {
-        // Message.error(err || 'Verification failed, please login again')
-        // next({ path: '/' })
-        // })
-        })
-      } else {
-        next()
-      }
+      console.log('=+++++++从+++++',from)
+      next()
+      const roles = store.getters.roles
+      store.dispatch('GenerateRoutes', { roles }).then(() => { // 根据roles权限生成可访问的路由表
+        // 动态添加可访问路由表
+        next() // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
+      })
+      // if (store.getters.roles.length === 0) {
+      //   // 获取用户数据
+      //   store.dispatch('GetuserInfo').then(() => {
+      //     // 重新计算动态路由
+      //     const roles = store.getters.roles
+      //     store.dispatch('GenerateRoutes', { roles }).then(() => { // 根据roles权限生成可访问的路由表
+      //       // 动态添加可访问路由表
+      //       router.addRoutes(store.getters.addRouters)
+      //       next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
+      //     })
+      //   }).catch(() => {
+      //   // 调用取消登录
+      //     store.dispatch('FedLogOut').then(() => {
+      //     Message.error(err || 'Verification failed, please login again')
+      //     next({ path: '/' })
+      //     })
+      //   })
+      // } else {
+      //   next()
+      // }
     }
   } else {
     if (whiteList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入

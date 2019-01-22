@@ -2,18 +2,18 @@
     <div>
         <a-tabs defaultActiveKey="1" @change="callback">
             <a-tab-pane tab="地点列表" key="1">
-                <list-item></list-item>
+                <site-item></site-item>
             </a-tab-pane>
             <a-tab-pane tab="新建地点" key="2" forceRender>
-                <list-add></list-add>
+                <site-add></site-add>
             </a-tab-pane>
         </a-tabs>
     </div>
 </template>
 <script>
 
-import listItem from './listItem'
-import listAdd from './listAdd'
+import siteItem from './siteItem'
+import siteAdd from './siteAdd'
 export default {
   data () {
     return {
@@ -21,8 +21,8 @@ export default {
     }
   },
   components: {
-    listItem,
-    listAdd
+    siteItem,
+    siteAdd
   },
   methods: {
     callback (key) {

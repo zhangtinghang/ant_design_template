@@ -2,18 +2,18 @@
     <div>
         <a-tabs defaultActiveKey="1" @change="callback">
             <a-tab-pane tab="视频管理" key="1">
-                <student-item></student-item>
+                <video-item></video-item>
             </a-tab-pane>
             <a-tab-pane tab="上传视频资源" key="2" forceRender>
-                <student-add></student-add>
+                <video-add></video-add>
             </a-tab-pane>
         </a-tabs>
     </div>
 </template>
 <script>
 
-import studentItem from './studentItem'
-import studentAdd from './studentAdd'
+import videoItem from './videoItem'
+import videoAdd from './videoAdd'
 export default {
   data () {
     return {
@@ -21,8 +21,8 @@ export default {
     }
   },
   components: {
-    studentItem,
-    studentAdd
+    videoItem,
+    videoAdd
   },
   methods: {
     callback (key) {

@@ -5,15 +5,15 @@
                 <a-col :span="3">上传风采图片：</a-col>
                 <a-col :span="9">
                     <a-upload
-                        name="avatar"
                         listType="picture-card"
                         class="avatar-uploader"
                         :showUploadList="false"
-                        action="//jsonplaceholder.typicode.com/posts/"
+                        action="http://112.74.215.22:5678/pe/file"
                         :beforeUpload="beforeUpload"
-                        @change="handleChange"
+                        :data="uploadData"
+                        @change="uploadImg"
                     >
-                        <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+                        <img v-if="imageUrl" class="imgCover" :src="imageUrl" alt="avatar" />
                         <div v-else>
                             <a-icon :type="loading ? 'loading' : 'plus'" />
                             <div class="ant-upload-text">上传</div>
@@ -23,17 +23,17 @@
             </a-row>
             <div class="content-title">
                 <span class="content-text">介绍文字</span>
-                <span class="content-btn">保存</span>
+                <span class="content-btn" @click="saveToData">保存</span>
             </div>
-            <a-textarea class="content" placeholder="请输入" :autosize="{ minRows: 10, maxRows: 15 }" />
+            <a-textarea class="content" placeholder="请输入" v-model="formData.intro" :autosize="{ minRows: 10, maxRows: 15 }" />
         </div> 
         <div>
             <a-row type="flex" justify="start">
                 <a-col :span="3">是否开启：</a-col>
                 <a-col :span="9">
-                    <a-select  style="width: 100%" @change="handleChange">
-                        <a-select-option value="jack">是</a-select-option>
-                        <a-select-option value="lucy">否</a-select-option>
+                    <a-select  style="width: 100%" v-model="formData.enable">
+                        <a-select-option value="1">是</a-select-option>
+                        <a-select-option value="0">否</a-select-option>
                     </a-select>
                 </a-col>
             </a-row>
@@ -42,43 +42,66 @@
 </template>
 
 <script>
-function getBase64 (img, callback) {
-  const reader = new FileReader()
-  reader.addEventListener('load', () => callback(reader.result))
-  reader.readAsDataURL(img)
-}
+import { createStudent } from '@/api/student'
 export default {
     data () {
     return {
       loading: false,
       imageUrl: '',
+      uploadData: {},
+      formData: {
+          enable: '',
+          intro: ''
+      }
     }
   },
+  mounted () {
+      this.uploadData = {
+          token: this.$store.state.user.token,
+          fileName: 'avatar'
+      }
+  },
   methods: {
-    handleChange (info) {
-      if (info.file.status === 'uploading') {
-        this.loading = true
-        return
-      }
-      if (info.file.status === 'done') {
-        // Get this url from response in real world.
-        getBase64(info.file.originFileObj, (imageUrl) => {
-          this.imageUrl = imageUrl
-          this.loading = false
-        })
-      }
-    },
     beforeUpload (file) {
-      const isJPG = file.type === 'image/jpeg'
-      if (!isJPG) {
-        this.$message.error('You can only upload JPG file!')
+      const isLt4M = file.size / 1024 / 1024 < 4
+      if (!isLt4M) {
+        this.$message.error('图片大小超过4MB!')
       }
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isLt2M) {
-        this.$message.error('Image must smaller than 2MB!')
-      }
-      return isJPG && isLt2M
+      return isLt4M
     },
+    uploadImg (info) {
+        if (info.file.status !== 'uploading') {}
+        if (info.file.status === 'done') {
+            this.$message.success(`上传图片成功.`)
+            this.imageUrl = 'http://112.74.215.22/pe/'+info.file.response.filenames[0]
+        } else if (info.file.status === 'error') {
+            if(info.file && info.file.error && info.file.error.status === 401) {
+                removeToken()
+                this.$router.push('/login')
+                this.$message.error(`未登录或帐号过期！`)
+            } else {
+                this.$message.error('上传图片失败!')
+            }
+        }
+    },
+    saveToData () {
+        this.formData.picture = this.imageUrl
+        this.formData.token = this.$store.state.user.token
+        try {
+            this.formData.enable = parseInt(this.formData.enable)            
+        } catch (error) {}
+        createStudent(this.formData).then((data) => {
+            this.imageUrl = '';
+            for (let i in this.formData) {
+                this.formData[i] = ''
+            }
+            this.$message.success(`上传信息成功.`)
+        }).catch((err) => {
+            if (err) {
+                this.$message.success(`上传信息失败.`+err)
+            }
+        })
+    }
   },
 }
 </script>
@@ -100,6 +123,7 @@ export default {
         }
         .content-btn{
             color: #1890FF;
+            cursor: pointer;
         }
         .content-text{
             & /deep/ .content-text-input{
@@ -112,5 +136,9 @@ export default {
     }
     .ant-row-flex{
         margin-top: 30px;
+    }
+    .imgCover{
+        width: 104px;
+        height: 104px;
     }
 </style>

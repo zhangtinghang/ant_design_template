@@ -1,18 +1,19 @@
 <template>
     <div>
-        <div>
-            <div class="content-title">
-                <span class="content-text">
-                    <a-input class="content-text-input" v-model="formData.title" placeholder="请输入标题" />
-                </span>
-                <span class="content-btn" @click="saveToData">保存</span>
-            </div>
-            <a-textarea class="content" placeholder="请输入" v-model="formData.intro" :autosize="{ minRows: 10, maxRows: 15 }" />
-        </div> 
-        <div>
-            <a-row type="flex" justify="start">
-                <a-col :span="3">上传轮播图片：</a-col>
-                <a-col :span="9">
+        <a-form :form="formData">
+            <a-form-item
+            label='地点名称'
+            :labelCol="{ span: 5 }"
+            :wrapperCol="{ span: 12 }"
+            >
+            <a-input v-model="formData.real_name" placeholder='请输入地点名称' />
+            </a-form-item>
+            <a-form-item
+                label='上传图片：'
+                :labelCol="{ span: 5 }"
+                :wrapperCol="{ span: 12 }"
+            >
+                <a-row type="flex" justify="start">
                     <a-upload
                         listType="picture-card"
                         class="avatar-uploader"
@@ -28,34 +29,49 @@
                             <div class="ant-upload-text">上传</div>
                         </div>
                     </a-upload>
-                </a-col>
-            </a-row>
-            <a-row type="flex" justify="start">
-                <a-col :span="3">类型：</a-col>
-                <a-col :span="9">
-                    <a-select style="width: 100%" v-model="formData.type">
-                        <a-select-option value="announcement">公告</a-select-option>
-                        <a-select-option value="activity">活动</a-select-option>
-                        <a-select-option value="information">资讯</a-select-option>
-                    </a-select>
-                </a-col>
-            </a-row>
-            <a-row type="flex" justify="start">
-                <a-col :span="3">是否开启：</a-col>
-                <a-col :span="9">
-                    <a-select style="width: 100%" v-model="formData.enable">
-                        <a-select-option value="1">是</a-select-option>
-                        <a-select-option value="0">否</a-select-option>
-                    </a-select>
-                </a-col>
-            </a-row>
-        </div>
+                </a-row>
+            </a-form-item>
+
+            <a-form-item
+            label='地理经度：'
+            :labelCol="{ span: 5 }"
+            :wrapperCol="{ span: 12 }"
+            >
+            <a-input v-model="formData.longitude" placeholder='请输入地理经度' />
+            </a-form-item>
+
+            <a-form-item
+            label='地理纬度：'
+            :labelCol="{ span: 5 }"
+            :wrapperCol="{ span: 12 }"
+            >
+            <a-input v-model="formData.latitude" placeholder='请输入地理纬度' />
+            </a-form-item>
+            
+            <a-form-item
+            label='是否启用'
+            :labelCol="{ span: 5 }"
+            :wrapperCol="{ span: 12 }"
+            >
+            <a-select v-model="formData.enable" placeholder='请选择'>
+                <a-select-option value='1'>是</a-select-option>
+                <a-select-option value='0'>否</a-select-option>
+            </a-select>
+            </a-form-item>
+
+            <a-form-item
+            :wrapperCol="{ span: 12, offset: 5 }"
+            >
+                <a-button type='primary' htmlType='submit' @click="saveToData">
+                    保存
+                </a-button>
+            </a-form-item>
+        </a-form>
     </div>
 </template>
 
 <script>
-import { createCarousel } from '@/api/carousel'
-import { removeToken } from '@/utils/auth'
+import { createSite } from '@/api/site'
 export default {
     data () {
     return {
@@ -63,21 +79,20 @@ export default {
       imageUrl: '',
       uploadData: {},
       formData: {
-        type: '',
+        real_name: '',
+        longitude: '',
+        latitude: '',
         enable: '',
-        title: '',
-        picture: '',
-        token: '',
-        intro: ''
+        token: ''
       }
     }
   },
-  mounted () {
-      this.uploadData = {
-          token: this.$store.state.user.token,
-          fileName: 'avatar'
-      }
-  },
+mounted () {
+    this.uploadData = {
+        token: this.$store.state.user.token,
+        fileName: 'avatar'
+    }
+},
   methods: {
     beforeUpload (file) {
       console.log(file)
@@ -108,7 +123,7 @@ export default {
         try {
             this.formData.enable = parseInt(this.formData.enable)            
         } catch (error) {}
-        createCarousel(this.formData).then((data) => {
+        createSite(this.formData).then((data) => {
             this.$message.success(`上传信息成功.`)
             this.imageUrl = '';
             for (let i in this.formData) {

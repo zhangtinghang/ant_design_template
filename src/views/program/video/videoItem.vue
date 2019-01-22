@@ -1,7 +1,17 @@
 <template>
     <div class="user-weaaper">
         <div class="wapper">
-            <a-table :columns="columns" :pagination="false" :dataSource="listData" :scroll="{ x: '100%'}">
+            <a-table :columns="columns" :pagination="false" :dataSource="dataDetail" :scroll="{ x: '100%'}">
+                <div slot="images" class="img-wapper" slot-scope="text, record">
+                    <video :src="videoUrl+record.video" preload width="100%" height="100%" controls="controls">
+                        您的浏览器不支持 video 标签,请切换浏览器。
+                    </video>
+                </div>
+                <div slot="typeTag" slot-scope="text, record">
+                    <a-tag v-if="record.enable === 1" color="blue">启用</a-tag>
+                    <a-tag v-else color="red">停用</a-tag>
+                </div>
+                <div slot="timeDate" slot-scope="text, record">{{record.create_time | moment("YYYY-MM-DD HH:mm:ss")}}</div>
                 <div slot="change" slot-scope="text, record">
                     <div class="opera-item"><a-popconfirm title="确定修改？" v-if="record.enable === 1" okText="确定" cancelText="取消" @confirm="carouselStop"><a-button>停用</a-button></a-popconfirm><a-button type="primary" v-else @click="carouselStart">启用</a-button></div>
                     <div class="opera-item"><a-button type="primary" @click="carouselEdit">编辑</a-button></div>
@@ -20,7 +30,7 @@
     </div>
 </template>
 <script>
-import { getCourse } from '@/api/list'
+import { getVideo } from '@/api/video'
 
 // 表格数据
 const columns = [{
@@ -28,42 +38,50 @@ const columns = [{
   dataIndex: 'number',
   align: 'center'
 }, {
-  title: '课程名称',
-  dataIndex: 'real_name',
+  title: '标题',
+  dataIndex: 'title',
   align: 'center'
 }, {
-  title: '课程介绍',
+  title: '风采视频',
+  dataIndex: 'video',
+  scopedSlots: { customRender: 'images'},
+  align: 'center'
+}, {
+  title: '视频介绍',
   dataIndex: 'intro',
   align: 'center'
 }, {
-    title: '类型',
-  dataIndex: 'type',
+    title: '状态',
+    dataIndex: 'enable',
+    scopedSlots: { customRender: 'typeTag'},
+    align: 'center'
+}, {
+  title: '上传人',
+  dataIndex: 'user',
   align: 'center'
 }, {
-  title: '节数',
-  dataIndex: 'count_',
-  align: 'center'
-}, {
-  title: '金额',
-  dataIndex: 'money',
-  align: 'center'
+  title: '时间',
+  dataIndex: 'create_time',
+  align: 'center',
+  scopedSlots: { customRender: 'timeDate'}
 }, {
   title: '操作',
   dataIndex: 'operation',
   align: 'center',
   scopedSlots: { customRender: 'change'}
 }];
+
 export default {
     created () {
-        getCourse().then((info) => {
-            console.log('获取课程列表信息成功', info.data)
-            this.listData = info.data
+        getVideo().then((info) => {
+            this.dataDetail = info.data
         })
     },
     data () {
         return {
-            listData: [],
-            columns
+            dataDetail: [],
+            columns,
+            videoUrl: 'http://112.74.215.22/pe/'
         }
     },
     methods: {

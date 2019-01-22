@@ -2,22 +2,17 @@
     <div class="user-weaaper">
         <div class="form-search">
             <div class="form">
-                <a-form layout='inline' @submit="handleSubmit" :autoFormCreate="(form)=>{this.form = form}">
-                    <template v-if="form">
-                        <a-form-item
-                        label='用户查询：'
-                        fieldDecoratorId="userSelect"
-                        >
-                            <a-input placeholder='请输入'>
-                            </a-input>
+                <a-form layout='inline' :form="formData">
+                    <template>
+                        <a-form-item label='用户查询：'>
+                            <a-input v-model="formData.selectData" placeholder='请输入'> </a-input>
                         </a-form-item>
 
                         <a-form-item>
-                            <a-button
+                            <a-button 
+                                @click="selectData"
                                 type='primary'
-                                htmlType='submit'
-                                :disabled="hasErrors(form.getFieldsError())"
-                            >
+                                htmlType='submit'>
                                 查询
                             </a-button>
                         </a-form-item>
@@ -25,13 +20,13 @@
                 </a-form>
             </div>
             <div class="addUser">
-                <a-button type="primary">新增用户</a-button>
+                <a-button type="primary" @click="addUser">新增用户</a-button>
             </div>
         </div>
         <div class="wapper">
             <a-table :columns="columns" :pagination="false" :dataSource="data" :scroll="{ x: 1500}">
                 <div slot="change" slot-scope="text, record">
-                    <span class="changeItem" @click="showModal">禁用</span> <span class="changeItem" @click="showModal">修改</span> <span class="changeItem" style="color: red;" @click="showModal">删除</span>
+                    <a-popconfirm title="确定禁用？" okText="确定" cancelText="取消" @confirm="carouselStop"><span class="changeItem">禁用</span></a-popconfirm> <span class="changeItem" @click="carouselEdit">修改</span> <a-popconfirm title="确定禁用？" okText="确定" cancelText="取消" @confirm="carouselDelete"><span class="changeItem" style="color: red;">删除</span></a-popconfirm>
                 </div>
             </a-table>
         </div>
@@ -40,31 +35,12 @@
                     <span>共400条记录 第 1 / 80页</span>
                 </div>
                 <div class="footer-pgRight">
-                    <a-pagination showSizeChanger @showSizeChange="onShowSizeChange" :defaultCurrent="3" :total="500" />
+                    <a-pagination @showSizeChange="onShowSizeChange" :defaultCurrent="1" :total="500" />
                 </div>
         </div>
-        <a-modal
-            title="Title"
-            :visible="visible"
-            @ok="handleOk"
-            :confirmLoading="confirmLoading"
-            @cancel="handleCancel"
-            >
-            <p>{{ModalText}}</p>
-        </a-modal>
     </div>
 </template>
 <script>
-function hasErrors (fieldsError) {
-  return Object.keys(fieldsError).some(field => fieldsError[field])
-}
-function changeTextItem (text, record, index) {
-    if(text.length > 15){
-        let newText = text.slice(0,15)
-        return newText + '...'
-    }
-    return text
-}
 
 // 表格数据
 const columns = [{
@@ -112,72 +88,35 @@ for (let i = 0; i < 10; i++) {
 export default {
     data () {
         return {
-            hasErrors,
             form: null,
             data,
-            loading: false,
-            selectedRowKeys: [],
             columns,
-            ModalText: 'Content of the modal',
-            visible: false,
-            confirmLoading: false,
+            formData: {
+                selectData: ''
+            }
         }
-    },
-    mounted () {
-        this.$nextTick(() => {
-        // To disabled submit button at the beginning.
-        this.form.validateFields()
-        })
-    },
-    computed: {
-        hasSelected() {
-        return this.selectedRowKeys.length > 0
-        }
-    },
-     watch:{
-      pageSize(val) {
-        console.log('pageSize',val);
-      },
-      current(val) {
-        console.log('current',val);
-      }
     },
     methods: {
         onShowSizeChange(current, pageSize) {
             console.log(current, pageSize);
         },
-        showModal() {
-        this.visible = true
+        carouselStop () {
+            console.log('轮播图状态修改')
         },
-        handleOk(e) {
-            this.ModalText = 'The modal will be closed after two seconds';
-            this.confirmLoading = true;
-            setTimeout(() => {
-                this.visible = false;
-                this.confirmLoading = false;
-            }, 2000);
+        carouselStart () {
+            console.log('轮播图状态修改')
         },
-        handleCancel(e) {
-            console.log('Clicked cancel button');
-            this.visible = false
+        carouselEdit () {
+            console.log('轮播图编辑')
         },
-        handleSubmit  (e) {
-        e.preventDefault()
-        this.form.validateFields((err, values) => {
-            if (!err) {
-                // eslint-disable-next-line
-                console.log('Received values of form: ', values)
-            }
-        })
+        carouselDelete () {
+            console.log('轮播图删除')
         },
-        onChange(pageNumber) {
-            console.log('Page: ', pageNumber);
-        },
-        changeItem () {
+        selectData () {
             console.log('查询')
         },
-        deleteItem () {
-            console.log('删除')
+        addUser () {
+            console.log('新增用户')
         }
     },
 }
@@ -209,9 +148,6 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-.footer-pgLeft{
-
 }
 </style>
 

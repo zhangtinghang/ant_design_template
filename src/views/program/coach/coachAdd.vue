@@ -1,17 +1,8 @@
 <template>
     <div>
         <div>
-            <div class="content-title">
-                <span class="content-text">
-                    <a-input class="content-text-input" v-model="formData.title" placeholder="请输入标题" />
-                </span>
-                <span class="content-btn" @click="saveToData">保存</span>
-            </div>
-            <a-textarea class="content" placeholder="请输入" v-model="formData.intro" :autosize="{ minRows: 10, maxRows: 15 }" />
-        </div> 
-        <div>
             <a-row type="flex" justify="start">
-                <a-col :span="3">上传轮播图片：</a-col>
+                <a-col :span="3">上传风采图片：</a-col>
                 <a-col :span="9">
                     <a-upload
                         listType="picture-card"
@@ -30,20 +21,17 @@
                     </a-upload>
                 </a-col>
             </a-row>
-            <a-row type="flex" justify="start">
-                <a-col :span="3">类型：</a-col>
-                <a-col :span="9">
-                    <a-select style="width: 100%" v-model="formData.type">
-                        <a-select-option value="announcement">公告</a-select-option>
-                        <a-select-option value="activity">活动</a-select-option>
-                        <a-select-option value="information">资讯</a-select-option>
-                    </a-select>
-                </a-col>
-            </a-row>
+            <div class="content-title">
+                <span class="content-text">介绍文字</span>
+                <span class="content-btn" @click="saveToData">保存</span>
+            </div>
+            <a-textarea class="content" v-model="formData.intro" placeholder="请输入" :autosize="{ minRows: 10, maxRows: 15 }" />
+        </div> 
+        <div>
             <a-row type="flex" justify="start">
                 <a-col :span="3">是否开启：</a-col>
                 <a-col :span="9">
-                    <a-select style="width: 100%" v-model="formData.enable">
+                    <a-select  style="width: 100%" v-model="formData.enable">
                         <a-select-option value="1">是</a-select-option>
                         <a-select-option value="0">否</a-select-option>
                     </a-select>
@@ -54,8 +42,7 @@
 </template>
 
 <script>
-import { createCarousel } from '@/api/carousel'
-import { removeToken } from '@/utils/auth'
+import { createCoach } from '@/api/coach'
 export default {
     data () {
     return {
@@ -63,20 +50,16 @@ export default {
       imageUrl: '',
       uploadData: {},
       formData: {
-        type: '',
-        enable: '',
-        title: '',
-        picture: '',
-        token: '',
-        intro: ''
+          intro: '',
+          enable: ''
       }
     }
   },
   mounted () {
-      this.uploadData = {
-          token: this.$store.state.user.token,
-          fileName: 'avatar'
-      }
+    this.uploadData = {
+        token: this.$store.state.user.token,
+        fileName: 'avatar'
+    }
   },
   methods: {
     beforeUpload (file) {
@@ -108,7 +91,7 @@ export default {
         try {
             this.formData.enable = parseInt(this.formData.enable)            
         } catch (error) {}
-        createCarousel(this.formData).then((data) => {
+        createCoach(this.formData).then((data) => {
             this.$message.success(`上传信息成功.`)
             this.imageUrl = '';
             for (let i in this.formData) {
@@ -142,6 +125,7 @@ export default {
         }
         .content-btn{
             color: #1890FF;
+            cursor: pointer;
         }
         .content-text{
             & /deep/ .content-text-input{

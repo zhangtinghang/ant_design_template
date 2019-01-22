@@ -1,14 +1,14 @@
 <template>
     <div class="user-weaaper">
         <div class="wapper">
-            <a-table :columns="columns" :pagination="false" :dataSource="data" :scroll="{ x: '100%'}">
+            <a-table :columns="columns" :pagination="false" :dataSource="listData" :scroll="{ x: '100%'}">
                 <div slot="images" class="img-wapper" slot-scope="text, record">
                     <img :src="text" alt="轮播图片" />
                 </div>
                 <div slot="change" slot-scope="text, record">
-                        <div class="opera-item"><a-button type="primary">启用</a-button></div>
-                        <div class="opera-item"><a-button type="primary">编辑</a-button></div>
-                        <div class="opera-item"><a-button type="danger">删除</a-button></div>
+                    <div class="opera-item"><a-popconfirm title="确定修改？" v-if="record.enable === 1" okText="确定" cancelText="取消" @confirm="carouselStop"><a-button>停用</a-button></a-popconfirm><a-button type="primary" v-else @click="carouselStart">启用</a-button></div>
+                    <div class="opera-item"><a-button type="primary" @click="carouselEdit">编辑</a-button></div>
+                    <div class="opera-item"><a-popconfirm title="确定修改？" okText="确定" cancelText="取消" @confirm="carouselDelete"><a-button type="danger">删除</a-button></a-popconfirm></div>
                 </div>
             </a-table>
         </div>
@@ -17,33 +17,13 @@
                 <span>共400条记录 第 1 / 80页</span>
             </div>
             <div class="footer-pgRight">
-                <a-pagination showSizeChanger @showSizeChange="onShowSizeChange" :defaultCurrent="3" :total="500" />
+                <a-pagination @showSizeChange="onShowSizeChange" :defaultCurrent="1" :total="500"></a-pagination>
             </div>
         </div>
-        <a-modal
-            title="Title"
-            :visible="visible"
-            @ok="handleOk"
-            :confirmLoading="confirmLoading"
-            @cancel="handleCancel"
-            >
-            <p>{{ModalText}}</p>
-        </a-modal>
     </div>
 </template>
 <script>
-import imagesItem from '../../images/imgCover.png'
-function hasErrors (fieldsError) {
-  return Object.keys(fieldsError).some(field => fieldsError[field])
-}
-function changeTextItem (text, record, index) {
-    if(text.length > 15){
-        let newText = text.slice(0,15)
-        return newText + '...'
-    }
-    return text
-}
-
+import { getCarousel } from '@/api/carousel'
 // 表格数据
 const columns = [{
   title: '编号',
@@ -51,24 +31,25 @@ const columns = [{
   align: 'center'
 }, {
   title: '图片',
-  dataIndex: 'image',
+  dataIndex: 'picture',
   scopedSlots: { customRender: 'images'},
   align: 'center'
 }, {
   title: '正文内容',
-  dataIndex: 'content',
+  dataIndex: 'intro',
+  width: '40%',
   align: 'center'
 }, {
     title: '类型',
-  dataIndex: 'type',
-  align: 'center'
+    dataIndex: 'enable',
+    align: 'center'
 }, {
   title: '上传人',
   dataIndex: 'user',
   align: 'center'
 }, {
   title: '时间',
-  dataIndex: 'time',
+  dataIndex: 'create_time',
   align: 'center'
 }, {
   title: '操作',
@@ -76,84 +57,34 @@ const columns = [{
   align: 'center',
   scopedSlots: { customRender: 'change'}
 }];
-
-const data = [];
-for (let i = 0; i < 10; i++) {
-  data.push({
-    key: i,
-    number: i,
-    time: '2018/08/07 12:21',
-    phone: '123141515',
-    user:'张三',
-    image: imagesItem,
-    content: '这是无数个正文内容',
-    type: '公告',
-    time: '2018-11-22',
-  });
-}
 export default {
+    mounted () {
+        getCarousel().then((info) => {
+            console.log('获取轮播图成功', info.data)
+            this.listData = info.data
+        })
+    },
     data () {
         return {
-            imagesItem,
-            hasErrors,
-            data,
-            loading: false,
-            selectedRowKeys: [],
-            columns,
-            ModalText: 'Content of the modal',
-            visible: false,
-            confirmLoading: false,
+            listData: [],
+            columns
         }
-    },
-    computed: {
-        hasSelected() {
-        return this.selectedRowKeys.length > 0
-        }
-    },
-     watch:{
-      pageSize(val) {
-        console.log('pageSize',val);
-      },
-      current(val) {
-        console.log('current',val);
-      }
     },
     methods: {
         onShowSizeChange(current, pageSize) {
             console.log(current, pageSize);
         },
-        showModal() {
-        this.visible = true
+        carouselStop () {
+            console.log('轮播图状态修改')
         },
-        handleOk(e) {
-            this.ModalText = 'The modal will be closed after two seconds';
-            this.confirmLoading = true;
-            setTimeout(() => {
-                this.visible = false;
-                this.confirmLoading = false;
-            }, 2000);
+        carouselStart () {
+            console.log('轮播图状态修改')
         },
-        handleCancel(e) {
-            console.log('Clicked cancel button');
-            this.visible = false
+        carouselEdit () {
+            console.log('轮播图编辑')
         },
-        handleSubmit  (e) {
-        e.preventDefault()
-        this.form.validateFields((err, values) => {
-            if (!err) {
-                // eslint-disable-next-line
-                console.log('Received values of form: ', values)
-            }
-        })
-        },
-        onChange(pageNumber) {
-            console.log('Page: ', pageNumber);
-        },
-        changeItem () {
-            console.log('查询')
-        },
-        deleteItem () {
-            console.log('删除')
+        carouselDelete () {
+            console.log('轮播图删除')
         }
     },
 }

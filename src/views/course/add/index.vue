@@ -27,7 +27,7 @@
                 label='性别'
                 fieldDecoratorId="gender"
                 >
-                    <a-select defaultValue="男" @change="handleChange">
+                    <a-select defaultValue="男">
                         <a-select-option value="男">男</a-select-option>
                         <a-select-option value="女">女</a-select-option>
                     </a-select>
@@ -48,7 +48,7 @@
                 label='状态：'
                 fieldDecoratorId="gender"
                 >
-                    <a-select @change="handleChange">
+                    <a-select>
                         <a-select-option value="男">普通学员</a-select-option>
                         <a-select-option value="女">会员学员</a-select-option>
                     </a-select>
@@ -59,7 +59,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='类型：'
                 fieldDecoratorId="gender">
-                    <a-select defaultValue="男" @change="handleChange">
+                    <a-select defaultValue="男">
                         <a-select-option value="男">类型1</a-select-option>
                         <a-select-option value="女">类型2</a-select-option>
                     </a-select>
@@ -69,7 +69,7 @@
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='节数：'
-                fieldDecoratorId="money"
+                fieldDecoratorId="num1"
                 >
                     <a-input type="number" placeholder='请输入' />
                 </a-form-item>
@@ -78,18 +78,18 @@
                     :labelCol="formItemLayout.labelCol"
                     :wrapperCol="formItemLayout.wrapperCol"
                     label='时间：'
-                    fieldDecoratorId="money"
+                    fieldDecoratorId="num2"
                     >
-                    <a-date-picker class="form-item-picker" @change="onChange" />
+                    <a-date-picker class="form-item-picker" />
                 </a-form-item>
 
                  <a-form-item
                     :labelCol="formItemLayout.labelCol"
                     :wrapperCol="formItemLayout.wrapperCol"
                     label='场地：'
-                    fieldDecoratorId="money"
+                    fieldDecoratorId="num3"
                     >
-                     <a-select @change="handleChange">
+                     <a-select>
                         <a-select-option value="男">场地1</a-select-option>
                         <a-select-option value="女">场地2</a-select-option>
                     </a-select>
@@ -128,17 +128,14 @@ export default {
       this.form.validateFields(
         (err) => {
           if (!err) {
-            console.info('success')
+              console.info('success', this.form.getFieldsValue())
           }
         },
       )
     },
     checkCancel () {
-        console.log('点击取消')
-    },
-    handleChange  (e) {
-
-    },
+        this.form.resetFields()
+    }
   },
 }
 </script>

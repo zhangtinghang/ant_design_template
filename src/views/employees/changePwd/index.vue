@@ -26,7 +26,7 @@
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='新密码'
-                fieldDecoratorId="phone"
+                fieldDecoratorId="newPass"
                 >
                     <a-input type="text" placeholder='请输入新密码' />
                 </a-form-item>
@@ -35,7 +35,7 @@
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='确认新密码'
-                fieldDecoratorId="phone"
+                fieldDecoratorId="checkNewPass"
                 >
                     <a-input type="number" placeholder='请再次确认新密码' />
                 </a-form-item>
@@ -65,17 +65,14 @@ export default {
       this.form.validateFields(
         (err) => {
           if (!err) {
-            console.info('success')
+            console.info('success', this.form.getFieldsValue())
           }
         },
       )
     },
     checkCancel () {
-        console.log('点击取消')
-    },
-    handleChange  (e) {
-
-    },
+        this.form.resetFields()
+    }
   },
 }
 </script>

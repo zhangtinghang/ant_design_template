@@ -2,6 +2,9 @@
     <div class="user-weaaper">
         <div class="wapper">
             <a-table :columns="columns" :pagination="false" :dataSource="listData" :scroll="{ x: '100%'}">
+                <div slot="images" class="img-wapper" slot-scope="text, record">
+                    <img :src="text" alt="轮播图片" />
+                </div>
                 <div slot="change" slot-scope="text, record">
                     <div class="opera-item"><a-popconfirm title="确定修改？" v-if="record.enable === 1" okText="确定" cancelText="取消" @confirm="carouselStop"><a-button>停用</a-button></a-popconfirm><a-button type="primary" v-else @click="carouselStart">启用</a-button></div>
                     <div class="opera-item"><a-button type="primary" @click="carouselEdit">编辑</a-button></div>
@@ -20,7 +23,7 @@
     </div>
 </template>
 <script>
-import { getCourse } from '@/api/list'
+import { getCoach } from '@/api/coach'
 
 // 表格数据
 const columns = [{
@@ -28,24 +31,25 @@ const columns = [{
   dataIndex: 'number',
   align: 'center'
 }, {
-  title: '课程名称',
-  dataIndex: 'real_name',
+  title: '风采图片',
+  dataIndex: 'picture',
+  scopedSlots: { customRender: 'images'},
   align: 'center'
 }, {
-  title: '课程介绍',
+  title: '教练介绍',
   dataIndex: 'intro',
   align: 'center'
 }, {
-    title: '类型',
-  dataIndex: 'type',
+    title: '状态',
+  dataIndex: 'enable',
   align: 'center'
 }, {
-  title: '节数',
-  dataIndex: 'count_',
+  title: '上传人',
+  dataIndex: 'user',
   align: 'center'
 }, {
-  title: '金额',
-  dataIndex: 'money',
+  title: '时间',
+  dataIndex: 'create_time',
   align: 'center'
 }, {
   title: '操作',
@@ -55,15 +59,15 @@ const columns = [{
 }];
 export default {
     created () {
-        getCourse().then((info) => {
-            console.log('获取课程列表信息成功', info.data)
+        getCoach().then((info) => {
+            console.log('获取教练信息成功', info.data)
             this.listData = info.data
         })
     },
     data () {
         return {
             listData: [],
-            columns
+            columns,
         }
     },
     methods: {

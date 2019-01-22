@@ -1,44 +1,16 @@
 <template>
     <div class="user-weaaper">
-        <div class="form-search">
-            <div class="form">
-                <a-form layout='inline' @submit="handleSubmit" :autoFormCreate="(form)=>{this.form = form}">
-                    <template v-if="form">
-                        <a-form-item label='用户查询：' fieldDecoratorId="userSelect">
-                            <a-input placeholder='请输入'></a-input>
-                        </a-form-item>
-
-                        <a-form-item
-                            label='状态查询：'>
-                            <a-select placeholder= '新用户'>
-                                <a-select-option value='1'>Option 1</a-select-option>
-                                <a-select-option value='2'>Option 2</a-select-option>
-                                <a-select-option value='3'>Option 3</a-select-option>
-                            </a-select>
-                        </a-form-item>
-
-                        <a-form-item>
-                            <a-button type='primary' htmlType='submit' :disabled="hasErrors(form.getFieldsError())">
-                                查询
-                            </a-button>
-                        </a-form-item>
-                    </template>
-                </a-form>
-            </div>
-            <div class="addUser">
-                <a-button type="primary">新增用户</a-button>
-            </div>
-        </div>
+        <search-list @selectHandle="selectHandle"></search-list>
         <div class="wapper">
             <a-table :columns="columns" :pagination="false" :dataSource="data" :scroll="{ x: 1500}">
                 <div slot="nameItem" slot-scope="text, record">
-                    <span class="changeItem">{{text}}</span>
+                    <span class="changeItem" @click="comeToDetail">{{text}}</span>
                 </div>
                 <div slot="resiItem" slot-scope="text, record">
-                    <span class="changeItem">{{text}}</span>
+                    <span class="changeItem" @click="comeToDetail">{{text}}</span>
                 </div>
                 <div slot="change" slot-scope="text, record">
-                    <span class="changeItem" @click="showModal">详情</span>
+                    <span class="changeItem" @click="comeToDetail">详情</span>
                 </div>
             </a-table>
         </div>
@@ -47,11 +19,11 @@
                     <span>共400条记录 第 1 / 80页</span>
                 </div>
                 <div class="footer-pgRight">
-                    <a-pagination showSizeChanger @showSizeChange="onShowSizeChange" :defaultCurrent="3" :total="500" />
+                    <a-pagination @change="onShowSizeChange" :defaultCurrent="3" :total="500" />
                 </div>
         </div>
-        <a-modal title="Title" :visible="visible" @ok="handleOk" :confirmLoading="confirmLoading" @cancel="handleCancel" >
-            <p>{{ModalText}}</p>
+        <a-modal title="用户详情" :visible="visible" @cancel="cancelDetail" :maskClosable="true" :footer="null"  width="60%">
+            <user-detail></user-detail>
         </a-modal>
     </div>
 </template>
@@ -118,38 +90,21 @@ for (let i = 0; i < 10; i++) {
     address: '这是场地'
   });
 }
+import searchList from './search'
+import userDetail from './detail'
 export default {
     data () {
         return {
             hasErrors,
             form: null,
             data,
-            loading: false,
-            selectedRowKeys: [],
             columns,
-            ModalText: 'Content of the modal',
             visible: false,
-            confirmLoading: false,
         }
     },
-    mounted () {
-        this.$nextTick(() => {
-        // To disabled submit button at the beginning.
-        this.form.validateFields()
-        })
-    },
-    computed: {
-        hasSelected() {
-        return this.selectedRowKeys.length > 0
-        }
-    },
-     watch:{
-      pageSize(val) {
-        console.log('pageSize',val);
-      },
-      current(val) {
-        console.log('current',val);
-      }
+    components: {
+        searchList,
+        userDetail
     },
     methods: {
         onShowSizeChange(current, pageSize) {
@@ -158,35 +113,14 @@ export default {
         showModal() {
         this.visible = true
         },
-        handleOk(e) {
-            this.ModalText = 'The modal will be closed after two seconds';
-            this.confirmLoading = true;
-            setTimeout(() => {
-                this.visible = false;
-                this.confirmLoading = false;
-            }, 2000);
+        comeToDetail () {
+            this.visible = true
         },
-        handleCancel(e) {
-            console.log('Clicked cancel button');
+        selectHandle (val) {
+            console.log('准备搜索', val)
+        },
+        cancelDetail () {
             this.visible = false
-        },
-        handleSubmit  (e) {
-        e.preventDefault()
-        this.form.validateFields((err, values) => {
-            if (!err) {
-                // eslint-disable-next-line
-                console.log('Received values of form: ', values)
-            }
-        })
-        },
-        onChange(pageNumber) {
-            console.log('Page: ', pageNumber);
-        },
-        changeItem () {
-            console.log('查询')
-        },
-        deleteItem () {
-            console.log('删除')
         }
     },
 }
@@ -197,14 +131,7 @@ export default {
     padding-bottom: 20px;
     min-height: 100%;
 }
-.form-search{
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 24px;
-}
-.ant-form-item /deep/ .ant-form-item-control{
-    width: 15vw;
-}
+
 
 .changeItem{
     color: #1890FF;

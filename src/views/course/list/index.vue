@@ -5,20 +5,22 @@
                 <card-item></card-item>
             </a-tab-pane>
             <a-tab-pane tab="历史订单" key="2" forceRender>
-                <card-item></card-item>
+                <history-item></history-item>
             </a-tab-pane>
         </a-tabs>
     </div>
 </template>
 <script>
 import cardItem from './card'
+import historyItem from './history'
 export default {
   data () {
     return {
     }
   },
   components: {
-      cardItem
+      cardItem,
+      historyItem
   },
   methods: {
     callback (key) {
