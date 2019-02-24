@@ -3,27 +3,30 @@
         <search-list @selectHandle="selectHandle"></search-list>
         <div class="wapper">
             <a-table :columns="columns" :pagination="false" :dataSource="data" :scroll="{ x: 1500}">
+                <div slot="time" slot-scope="text, record">
+                    {{ text*1000 | moment("YYYY年MM月DD日")}}
+                </div>
                 <div slot="nameItem" slot-scope="text, record">
-                    <span class="changeItem" @click="comeToDetail">{{text}}</span>
+                    <span class="changeItem" @click="comeToDetail(record)">{{text}}</span>
                 </div>
                 <div slot="resiItem" slot-scope="text, record">
-                    <span class="changeItem" @click="comeToDetail">{{text}}</span>
+                    <span class="changeItem" @click="comeToDetail(record)">{{text}}</span>
                 </div>
                 <div slot="change" slot-scope="text, record">
-                    <span class="changeItem" @click="comeToDetail">详情</span>
+                    <span class="changeItem" @click="comeToDetail(record)">详情</span>
                 </div>
             </a-table>
         </div>
         <div class="footer-pg">
                 <div class="footer-pgLeft">
-                    <span>共400条记录 第 1 / 80页</span>
+                    <span>共{{total}}条记录 第 {{currentNum}} / {{totalNum}}页</span>
                 </div>
                 <div class="footer-pgRight">
-                    <a-pagination @change="onShowSizeChange" :defaultCurrent="3" :total="500" />
+                    <a-pagination  @change="onShowSizeChange" :defaultCurrent="1" :total="total" />
                 </div>
         </div>
         <a-modal title="用户详情" :visible="visible" @cancel="cancelDetail" :maskClosable="true" :footer="null"  width="60%">
-            <user-detail></user-detail>
+            <user-detail :detailData="detailData"></user-detail>
         </a-modal>
     </div>
 </template>
@@ -42,82 +45,104 @@ function changeTextItem (text, record, index) {
 // 表格数据
 const columns = [{
   title: '编号',
-  dataIndex: 'number',
+  dataIndex: 'id',
+  align: 'center'
 }, {
   title: '姓名',
-  dataIndex: 'name',
-  scopedSlots: { customRender: 'nameItem'}
+  dataIndex: 'real_name',
+  scopedSlots: { customRender: 'nameItem'},
+  align: 'center'
 }, {
   title: '年龄',
   dataIndex: 'age',
+  align: 'center'
 }, {
   title: '性别',
-  dataIndex: 'gender',
+  dataIndex: 'sex',
+  align: 'center'
 }, {
   title: '联系方式',
   dataIndex: 'phone',
+  align: 'center'
 }, {
   title: '状态',
-  dataIndex: 'state',
+  dataIndex: 'student_level',
+  align: 'center'
 }, {
   title: '剩余课程',
-  dataIndex: 'residue',
-  scopedSlots: { customRender: 'resiItem'}
+  dataIndex: 'rest_count',
+  scopedSlots: { customRender: 'resiItem'},
+  align: 'center'
 }, {
   title: '时间',
-  dataIndex: 'time',
+  dataIndex: 'create_time',
+  scopedSlots: { customRender: 'time'},
+  align: 'center'
 }, {
   title: '场地',
-  dataIndex: 'address',
+  dataIndex: 'latest_course["location.real_name"]',
+  align: 'center'
 }, {
   title: '操作',
   dataIndex: 'operation',
-  scopedSlots: { customRender: 'change'}
+  scopedSlots: { customRender: 'change'},
+  align: 'center'
 }];
-
-const data = [];
-for (let i = 0; i < 10; i++) {
-  data.push({
-    key: i,
-    number: i,
-    name: `Edward King ${i}`,
-    age: '18',
-    gender:'男',
-    phone: '123141515',
-    state:'普通学员',
-    residue: '10',
-    time: '2018/08/07 12:21',
-    address: '这是场地'
-  });
-}
 import searchList from './search'
 import userDetail from './detail'
+import { getCourseUser, selectCourse } from '@/api/course'
+import { cloneDeep } from 'lodash'
 export default {
     data () {
         return {
             hasErrors,
             form: null,
-            data,
+            data: [],
             columns,
             visible: false,
+            total: 1,
+            currentNum: 1,
+            pageNum: 10,
+            detailData: [],
+            editVisible: false,
+            editFormData: {}
         }
+    },
+    created () {
+        this.getToCourseUser({ offset: 0, limit: 10})
     },
     components: {
         searchList,
         userDetail
     },
+    computed: {
+        totalNum() {
+            return Math.ceil(this.total/this.pageNum)
+        }
+    },
     methods: {
+        getToCourseUser (data) {
+            getCourseUser(data).then((courseInfo) => {
+                this.data = courseInfo.data
+                this.total = courseInfo.total_count
+            })
+        },
         onShowSizeChange(current, pageSize) {
-            console.log(current, pageSize);
+            this.currentNum  = current
+            this.pageNum = pageSize
+            this.getToCourseUser({ offset:(current-1) * pageSize, limit: pageSize})
         },
-        showModal() {
-        this.visible = true
-        },
-        comeToDetail () {
+        comeToDetail (item) {
+            console.log(item)
+            this.detailData = cloneDeep(item)
             this.visible = true
         },
         selectHandle (val) {
-            console.log('准备搜索', val)
+            let getData = Object.assign({}, {enable:-1}, {real_name: val}, {offset: 0, limit: 10, token: '12'})
+            selectCourse(getData).then((courseInfo) => {
+                this.data = courseInfo.data
+                this.total = courseInfo.total_count
+            })
         },
         cancelDetail () {
             this.visible = false

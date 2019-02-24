@@ -2,32 +2,43 @@
     <div class="user-weaaper">
         <div class="wapper">
             <a-table :columns="columns" :pagination="false" :dataSource="listData" :scroll="{ x: '100%'}">
+                <div slot="indexNum" slot-scope="text, record">
+                    <span>{{record.id}}</span>
+                </div>
+                <div slot="type" slot-scope="text, record">
+                    <a-tag v-if="text === 1" color="#87d068">启用</a-tag>
+                    <a-tag v-if="text === 0" color="pink">禁用</a-tag>
+                </div>
+                <div slot="time" slot-scope="text, record">
+                    {{ text*1000 | moment("YYYY年MM月DD日")}}
+                </div>
                 <div slot="images" class="img-wapper" slot-scope="text, record">
                     <img :src="text" alt="轮播图片" />
                 </div>
                 <div slot="change" slot-scope="text, record">
-                    <div class="opera-item"><a-popconfirm title="确定修改？" v-if="record.enable === 1" okText="确定" cancelText="取消" @confirm="carouselStop"><a-button>停用</a-button></a-popconfirm><a-button type="primary" v-else @click="carouselStart">启用</a-button></div>
-                    <div class="opera-item"><a-button type="primary" @click="carouselEdit">编辑</a-button></div>
-                    <div class="opera-item"><a-popconfirm title="确定修改？" okText="确定" cancelText="取消" @confirm="carouselDelete"><a-button type="danger">删除</a-button></a-popconfirm></div>
+                    <div class="opera-item"><a-popconfirm title="确定停用？" v-if="record.enable === 1" okText="确定" cancelText="取消" @confirm="carouselStop(record)"><a-button>停用</a-button></a-popconfirm><a-button type="primary" v-else @click="carouselStart(record)">启用</a-button></div>
+                    <!-- <div class="opera-item"><a-button type="primary" @click="carouselEdit">编辑</a-button></div> -->
+                    <div class="opera-item"><a-popconfirm title="确定删除？" okText="确定" cancelText="取消" @confirm="carouselDelete(record)"><a-button type="danger">删除</a-button></a-popconfirm></div>
                 </div>
             </a-table>
         </div>
         <div class="footer-pg">
             <div class="footer-pgLeft">
-                <span>共400条记录 第 1 / 80页</span>
+                <span>共{{total}}条记录 第 {{currentNum}} / {{pageNum}}页</span>
             </div>
             <div class="footer-pgRight">
-                <a-pagination @showSizeChange="onShowSizeChange" :defaultCurrent="1" :total="500"></a-pagination>
+                <a-pagination @change="onShowSizeChange" :defaultCurrent="1" :total="total"></a-pagination>
             </div>
         </div>
     </div>
 </template>
 <script>
-import { getCarousel } from '@/api/carousel'
+import { getCarousel, deleteCarousel, updateCarousel } from '@/api/carousel'
 // 表格数据
 const columns = [{
   title: '编号',
   dataIndex: 'number',
+  scopedSlots: { customRender: 'indexNum'},
   align: 'center'
 }, {
   title: '图片',
@@ -42,14 +53,16 @@ const columns = [{
 }, {
     title: '类型',
     dataIndex: 'enable',
+    scopedSlots: { customRender: 'type'},
     align: 'center'
 }, {
   title: '上传人',
-  dataIndex: 'user',
+  dataIndex: 'real_name',
   align: 'center'
 }, {
   title: '时间',
   dataIndex: 'create_time',
+  scopedSlots: { customRender: 'time'},
   align: 'center'
 }, {
   title: '操作',
@@ -58,33 +71,68 @@ const columns = [{
   scopedSlots: { customRender: 'change'}
 }];
 export default {
+    props: {
+        updateData: {
+            type: String
+        }
+    },
     mounted () {
-        getCarousel().then((info) => {
-            console.log('获取轮播图成功', info.data)
-            this.listData = info.data
-        })
+       this.getToCarousel()
     },
     data () {
         return {
             listData: [],
-            columns
+            columns,
+            total: 1,
+            currentNum: 1,
+            pageNum: 1
         }
     },
+    watch: {
+      updateData: function (val, oldVal) {
+          console.log(this)
+          if (val === 'true') {
+              this.getToCarousel()
+          }
+      }
+    },
     methods: {
+        getToCarousel () {
+            getCarousel({enable: -1}).then((info) => {
+                this.listData = info.data
+                this.total = info.total_count
+            })
+        },
         onShowSizeChange(current, pageSize) {
-            console.log(current, pageSize);
+            this.currentNum  = current
+            this.pageNum = pageSize
         },
-        carouselStop () {
-            console.log('轮播图状态修改')
+        carouselStop (record) {
+            record.enable = 0
+            this.modifyCarousel(record)
         },
-        carouselStart () {
-            console.log('轮播图状态修改')
+        carouselStart (record) {
+            record.enable = 1
+            this.modifyCarousel(record)
         },
         carouselEdit () {
             console.log('轮播图编辑')
         },
-        carouselDelete () {
-            console.log('轮播图删除')
+        carouselDelete (record) {
+            const id = record.id
+            deleteCarousel(id).then((delInfo) => {
+                if(delInfo.success) {
+                    this.$message.success(`删除信息成功.`)
+                    this.getToCarousel()
+                }
+            })
+        },
+        modifyCarousel (info) {
+            let {id, title, picture, type, intro, enable} = info
+            updateCarousel({id, title, picture, type, intro, enable}).then((upData) => {
+                this.$message.success(`修改状态成功.`)
+                this.getToCarousel()
+            })
         }
     },
 }

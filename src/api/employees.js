@@ -1,9 +1,18 @@
 import request from '@/utils/request'
 
-export function getEmployees () {
+export function getEmployees (data) {
   return request({
     url: '/staff_manage/staff',
-    method: 'get'
+    method: 'get',
+    data
+  })
+}
+
+export function selectEmployees (data) {
+  return request({
+    url: '/search/staff_user',
+    method: 'get',
+    data
   })
 }
 
@@ -23,10 +32,18 @@ export function updateEmployees (data) {
  })
 }
 
-export function deleteEmployees (data) {
+export function deleteEmployees (id) {
  return request({
    url: '/staff_manage/staff',
    method: 'delete',
-   data: data
+   data: {id}
  })
+}
+
+export function addBatchEmployees (data) {
+  return request({
+    url: '/batch/staff_user',
+    method: 'post',
+    data: data
+  })
 }

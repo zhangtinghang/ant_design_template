@@ -10,33 +10,27 @@ router.beforeEach((to, from, next) => {
     if (to.path === '/login') {
       next({ path: '/' })
     } else {
-      console.log('=+++++++从+++++',from)
-      next()
-      const roles = store.getters.roles
-      store.dispatch('GenerateRoutes', { roles }).then(() => { // 根据roles权限生成可访问的路由表
-        // 动态添加可访问路由表
-        next() // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
-      })
-      // if (store.getters.roles.length === 0) {
-      //   // 获取用户数据
-      //   store.dispatch('GetuserInfo').then(() => {
-      //     // 重新计算动态路由
-      //     const roles = store.getters.roles
-      //     store.dispatch('GenerateRoutes', { roles }).then(() => { // 根据roles权限生成可访问的路由表
-      //       // 动态添加可访问路由表
-      //       router.addRoutes(store.getters.addRouters)
-      //       next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
-      //     })
-      //   }).catch(() => {
-      //   // 调用取消登录
-      //     store.dispatch('FedLogOut').then(() => {
-      //     Message.error(err || 'Verification failed, please login again')
-      //     next({ path: '/' })
-      //     })
-      //   })
-      // } else {
-      //   next()
-      // }
+      if (store.getters.roles.length === 0) {
+        let roles = []
+        try {
+          let perm = null
+          if(store.getters.user && store.getters.user.staff_info && store.getters.user.staff_info.perm) {
+            perm = store.getters.user.staff_info.perm
+          }
+          // hack 当前只有一个角色
+          roles.push(perm)
+        } catch (error) {}
+        store.dispatch('GenerateRoutes', { roles }).then(() => { // 根据roles权限生成可访问的路由表
+          // 添加路由
+          store.dispatch('setRoles', roles)
+          console.log('解析出路由', roles)
+          // 动态添加可访问路由表
+          router.addRoutes(store.getters.addRouters)
+          next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
+        })
+      } else {
+        next()
+      }
     }
   } else {
     if (whiteList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入

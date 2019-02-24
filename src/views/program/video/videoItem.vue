@@ -11,31 +11,31 @@
                     <a-tag v-if="record.enable === 1" color="blue">启用</a-tag>
                     <a-tag v-else color="red">停用</a-tag>
                 </div>
-                <div slot="timeDate" slot-scope="text, record">{{record.create_time | moment("YYYY-MM-DD HH:mm:ss")}}</div>
+                <div slot="timeDate" slot-scope="text, record">{{record.create_time | moment("YYYY年MM月DD日")}}</div>
                 <div slot="change" slot-scope="text, record">
-                    <div class="opera-item"><a-popconfirm title="确定修改？" v-if="record.enable === 1" okText="确定" cancelText="取消" @confirm="carouselStop"><a-button>停用</a-button></a-popconfirm><a-button type="primary" v-else @click="carouselStart">启用</a-button></div>
-                    <div class="opera-item"><a-button type="primary" @click="carouselEdit">编辑</a-button></div>
-                    <div class="opera-item"><a-popconfirm title="确定修改？" okText="确定" cancelText="取消" @confirm="carouselDelete"><a-button type="danger">删除</a-button></a-popconfirm></div>
+                    <div class="opera-item"><a-popconfirm title="确定修改？" v-if="record.enable === 1" okText="确定" cancelText="取消" @confirm="carouselStop(record)"><a-button>停用</a-button></a-popconfirm><a-button type="primary" v-else @click="carouselStart(record)">启用</a-button></div>
+                    <!-- <div class="opera-item"><a-button type="primary" @click="carouselEdit">编辑</a-button></div> -->
+                    <div class="opera-item"><a-popconfirm title="确定修改？" okText="确定" cancelText="取消" @confirm="carouselDelete(record)"><a-button type="danger">删除</a-button></a-popconfirm></div>
                 </div>
             </a-table>
         </div>
         <div class="footer-pg">
             <div class="footer-pgLeft">
-                <span>共400条记录 第 1 / 80页</span>
+                <span>共{{total}}条记录 第 {{currentNum}} / {{pageNum}}页</span>
             </div>
             <div class="footer-pgRight">
-                <a-pagination @showSizeChange="onShowSizeChange" :defaultCurrent="1" :total="500" />
+                <a-pagination @change="onShowSizeChange" :defaultCurrent="1" :total="total" />
             </div>
         </div>
     </div>
 </template>
 <script>
-import { getVideo } from '@/api/video'
+import { getVideo, deleteVideo, updateVideo } from '@/api/video'
 
 // 表格数据
 const columns = [{
   title: '编号',
-  dataIndex: 'number',
+  dataIndex: 'id',
   align: 'center'
 }, {
   title: '标题',
@@ -57,7 +57,7 @@ const columns = [{
     align: 'center'
 }, {
   title: '上传人',
-  dataIndex: 'user',
+  dataIndex: 'real_name',
   align: 'center'
 }, {
   title: '时间',
@@ -72,33 +72,68 @@ const columns = [{
 }];
 
 export default {
-    created () {
-        getVideo().then((info) => {
-            this.dataDetail = info.data
-        })
+    props: {
+        updateData: {
+            type: String
+        }
+    },
+    mounted () {
+       this.getToVideo()
     },
     data () {
         return {
             dataDetail: [],
             columns,
-            videoUrl: 'http://112.74.215.22/pe/'
+            videoUrl: 'https://laite.pathfinder666.cn/pe/',
+            total: 1,
+            currentNum: 1,
+            pageNum: 1
         }
     },
+    watch: {
+      updateData: function (val, oldVal) {
+          console.log(this)
+          if (val === 'true') {
+              this.getToVideo()
+          }
+      }
+    },
     methods: {
+        getToVideo () {
+            getVideo({enable:-1}).then((info) => {
+                this.dataDetail = info.data
+            })
+        },
         onShowSizeChange(current, pageSize) {
-            console.log(current, pageSize);
+            this.currentNum  = current
+            this.pageNum = pageSize
         },
-        carouselStop () {
-            console.log('轮播图状态修改')
+        carouselStop (record) {
+            record.enable = 0
+            this.modifyVideo(record)
         },
-        carouselStart () {
-            console.log('轮播图状态修改')
+        carouselStart (record) {
+            record.enable = 1
+            this.modifyVideo(record)
         },
         carouselEdit () {
             console.log('轮播图编辑')
         },
-        carouselDelete () {
-            console.log('轮播图删除')
+        carouselDelete (record) {
+            const id = record.id
+            deleteVideo(id).then((delInfo) => {
+                if(delInfo.success) {
+                    this.$message.success(`删除信息成功.`)
+                    this.getToVideo()
+                }
+            })
+        },
+        modifyVideo (info) {
+            let {id, title, video, type, intro, enable} = info
+            updateVideo({id, title, video, type, intro, enable}).then((upData) => {
+                this.$message.success(`修改状态成功.`)
+                this.getToVideo()
+            })
         }
     },
 }

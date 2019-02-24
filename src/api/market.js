@@ -8,6 +8,14 @@ export function getMarket (data) {
   })
 }
 
+export function selectMarket (data) {
+  return request({
+    url: '/search/market_user',
+    method: 'get',
+    data: data
+  })
+}
+
 export function createMarket (data) {
   return request({
     url: '/market/user',
@@ -38,4 +46,12 @@ export function getFollow (data) {
    method: 'get',
    data: data
  })
+}
+
+export function addBatchMarket (data) {
+  return request({
+    url: '/batch/market_user',
+    method: 'post',
+    data: data
+  })
 }

@@ -1,11 +1,11 @@
 <template>
     <div>
-        <a-tabs defaultActiveKey="1" @change="callback">
-            <a-tab-pane tab="教练风采管理" key="1">
-                <coach-item></coach-item>
+        <a-tabs defaultActiveKey="true" @change="callback">
+            <a-tab-pane tab="教练风采管理" key="true">
+                <coach-item :updateData="update"></coach-item>
             </a-tab-pane>
-            <a-tab-pane tab="上传教练风采" key="2" forceRender>
-                <coach-add></coach-add>
+            <a-tab-pane tab="上传教练风采" key="false" forceRender>
+                <coach-add :updateData="update"></coach-add>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -15,13 +15,18 @@
 import coachItem from './coachItem'
 import coachAdd from './coachAdd'
 export default {
+  data () {
+    return {
+        update: 'false'
+    }
+  },
   components: {
     coachItem,
     coachAdd
   },
   methods: {
     callback (key) {
-      console.log(key)
+      this.update = key
     },
   },
 }

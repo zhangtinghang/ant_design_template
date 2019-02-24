@@ -7,7 +7,7 @@
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='姓名'
-                fieldDecoratorId="name"
+                fieldDecoratorId="real_name"
                 :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入需要录入的姓名' }]}"
                 >
                     <a-input placeholder='请输入' />
@@ -19,7 +19,7 @@
                 fieldDecoratorId="age"
                 :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入需要录入的年龄' }]}"
                 >
-                    <a-input type="number" placeholder='请输入需要录入的年龄' />
+                    <a-input type="number" placeholder='请录入' />
                 </a-form-item>
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
@@ -27,7 +27,7 @@
                 label='性别'
                 fieldDecoratorId="gender"
                 >
-                    <a-select defaultValue="男">
+                    <a-select defaultValue="sex">
                         <a-select-option value="男">男</a-select-option>
                         <a-select-option value="女">女</a-select-option>
                     </a-select>
@@ -39,18 +39,18 @@
                 label='电话'
                 fieldDecoratorId="phone"
                 >
-                    <a-input type="number" placeholder='请输入需要录入的年龄' />
+                    <a-input type="number" placeholder='请录入' />
                 </a-form-item>
 
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='状态：'
-                fieldDecoratorId="gender"
+                fieldDecoratorId="student_level"
                 >
                     <a-select>
-                        <a-select-option value="男">普通学员</a-select-option>
-                        <a-select-option value="女">会员学员</a-select-option>
+                        <a-select-option value="普通学员">普通学员</a-select-option>
+                        <a-select-option value="会员学员">会员学员</a-select-option>
                     </a-select>
                 </a-form-item>
 

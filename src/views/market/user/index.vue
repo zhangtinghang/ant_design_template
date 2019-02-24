@@ -2,19 +2,11 @@
     <div class="user-weaaper">
         <div class="form-search">
             <div class="form">
-                <a-form layout='inline' :form="searchData">
+                <a-form layout='inline'>
                     <a-form-item label='用户查询：'>
-                        <a-input placeholder='请输入' v-model="searchData.userSelect"></a-input>
+                        <a-input placeholder='请输入' v-model="userSelect"></a-input>
                     </a-form-item>
-    
-                    <a-form-item label='状态查询：'>
-                        <a-select placeholder='新用户' v-model="searchData.statusSelect">
-                            <a-select-option value='1'>Option 1</a-select-option>
-                            <a-select-option value='2'>Option 2</a-select-option>
-                            <a-select-option value='3'>Option 3</a-select-option>
-                        </a-select>
-                    </a-form-item>
-    
+
                     <a-form-item>
                         <a-button type='primary' htmlType='submit' @click="selectBtn">查询</a-button>
                     </a-form-item>
@@ -27,26 +19,29 @@
         <div class="wapper">
             <a-table :columns="columns" :pagination="false" :dataSource="listData" :scroll="{ x: 1500}">
                 <a slot="name" slot-scope="text, record, index" @click="sendToDetail(text, record, index)" href="javascript:;">{{text}}</a>
-                <a slot="state" slot-scope="text, record, index" @click="sendToDetail(text, record, index)" href="javascript:;">{{changeTextItem(text)}}</a>
-                <div slot="change" slot-scope="text, record">
-                    <span class="changeItem" @click="showModal">修改</span> <span class="changeItem" @click="addStudent">成为学员</span>
+                <a slot="state" slot-scope="text, record, index" @click="sendToDetail(text, record, index)" href="javascript:;">查看详情</a>
+                <div slot="time" slot-scope="text, record">
+                    {{ text*1000 | moment("YYYY年MM月DD日")}}
+                </div>
+                <div slot="change" slot-scope="text, record, index">
+                    <span class="changeItem" @click="showModal(text, record, index)">修改</span> <span class="changeItem" @click="addStudent(record)">成为学员</span>
                 </div>
             </a-table>
         </div>
         <div class="footer-pg">
             <div class="footer-pgLeft">
-                <span>共400条记录 第 1 / 80页</span>
+                <span>共{{total}}条记录 第 {{currentNum}} / {{totalNum}}页</span>
             </div>
             <div class="footer-pgRight">
-                <a-pagination @change="onShowSizeChange" :hideOnSinglePage="true" :total="500" />
+                <a-pagination  @change="onShowSizeChange" :defaultCurrent="1" :total="total" />
             </div>
         </div>
         <!-- 详情 -->
         <a-modal :visible="isDetail" :footer="null" width="60%">
             <detail-form :detailData="detailData" @closeDetail="closeDetail"></detail-form>
         </a-modal>
-        <a-modal :visible="visible" :footer="null">
-            <edit-form @editForm="editForm" @caceleditForm="caceleditForm"></edit-form>
+        <a-modal :visible="visible" :footer="null" :closable="false">
+            <edit-form @editForm="editForm" :editFormData="editFormData" @caceleditForm="caceleditForm"></edit-form>
         </a-modal>
         
     </div>
@@ -54,7 +49,9 @@
 
 <script>
     import editForm from './edit'
-    import detailForm from './detail'    
+    import detailForm from './detail'
+    import { cloneDeep } from 'lodash'
+    import { updateMarket } from '@/api/market'
     function changeTextItem(text, record, index) {
         if (text) {
             if (text && text.length && text.length > 15) {
@@ -70,65 +67,107 @@
     // 表格数据
     const columns = [{
         title: '编号',
-        dataIndex: 'number',
+        dataIndex: 'id',
     }, {
         title: '姓名',
         dataIndex: 'real_name',
         scopedSlots: {
             customRender: 'name'
-        }
+        },
+        align: 'center'
     }, {
         title: '性别',
         dataIndex: 'sex',
+        align: 'center'
     }, {
         title: '时间',
         dataIndex: 'create_time',
+        scopedSlots: { customRender: 'time'},
+        align: 'center'
     }, {
         title: '电话',
         dataIndex: 'phone',
+        align: 'center'
     }, {
         title: '备注',
         dataIndex: 'note',
-        customRender: changeTextItem
+        customRender: changeTextItem,
+        align: 'center'
     }, {
         title: '跟进状态',
         dataIndex: 'status',
         scopedSlots: {
             customRender: 'state'
-        }
+        },
+        align: 'center'
     }, {
         title: '跟进顾问',
         dataIndex: 'adviser',
+        align: 'center',
+        customRender: (text, record, index) => {
+            if( text === 1) {
+                return '是'
+            } else {
+                return '否'
+            }
+        }
     }, {
         title: '是否有效',
         dataIndex: 'is_valid',
-        width: '60px'
+        width: '100px',
+        align: 'center',
+        customRender: (text, record, index) => {
+            if( text === 1) {
+                return '是'
+            } else {
+                return '否'
+            }
+        }
     }, {
         title: '是否到访',
         dataIndex: 'is_visited',
-        width: '60px'
+        width: '100px',
+        align: 'center',
+        customRender: (text, record, index) => {
+            if( text === 1) {
+                return '是'
+            } else {
+                return '否'
+            }
+        }
     }, {
         title: '是否成交',
         dataIndex: 'is_deal',
-        width: '60px'
+        width: '100px',
+        align: 'center',
+        customRender: (text, record, index) => {
+            if( text === 1) {
+                return '是'
+            } else {
+                return '否'
+            }
+        }
     }, {
         title: '成交金额',
         dataIndex: 'money',
-        width: '60px'
+        width: '100px',
+        align: 'center',
+        customRender: (text, record, index) => {
+            const money = `¥${text/100}`
+            return money
+        }
     }, {
         title: '操作',
         dataIndex: 'operation',
         scopedSlots: {
             customRender: 'change'
-        }
+        },
+        align: 'center'
     }];
-import { getMarket } from '@/api/market'
+import { getMarket, selectMarket } from '@/api/market'
 export default {
     created () {
-        getMarket().then((info) => {
-            console.log('这是市场管理', info)
-            this.listData = info.data
-        })
+        this.getToMarket({offset: 0, limit: 10})
     },
     data() {
         return {
@@ -136,48 +175,70 @@ export default {
             columns,
             visible: false,
             isDetail: false,
-            searchData: {
-                userSelect: '',
-                statusSelect: ''
-            },
-            pageSize: 0,
-            current: 0,
-            detailData: {}
+            userSelect: '',
+            detailData: {},
+            editFormData: {},
+            total: 1,
+            currentNum: 1,
+            pageNum: 10
         }
     },
     components: {
         editForm,
         detailForm
     },
+    computed: {
+        totalNum() {
+            return Math.ceil(this.total/this.pageNum)
+        }
+    },
     methods: {
-        onShowSizeChange(page, pageSize) {
-            console.log('点击分页')
+        getToMarket(data) {
+            let getData = Object.assign({}, {enable:-1}, data)
+            getMarket(getData).then((info) => {
+                this.listData = info.data
+                this.total = info.total_count
+            })
         },
-        showModal() {
+        onShowSizeChange(page, pageSize) {
+            this.currentNum  = page
+            this.pageNum = pageSize
+            this.getToMarket({offset: (page-1)*pageSize, limit: 10})
+        },
+        showModal(text, record, index) {
+            this.editFormData = cloneDeep(record)
             this.visible = true
         },
         editForm(formData) {
-            console.log('得到修改的表单', formData)
-            this.visible = false;
+            updateMarket(formData).then((editInfo) => {
+                this.$message.success('修改成功！')
+                this.visible = false;
+                this.getToMarket({offset: (this.currentNum-1) * this.pageNum, limit: 10})
+            })
         },
         caceleditForm() {
             this.visible = false;
         },
         selectBtn () {
-            console.log('点击查询', this.searchData)
+            let getData = Object.assign({}, {enable:-1}, {real_name: this.userSelect}, {offset: 0, limit: 10, token: '12'})
+            selectMarket(getData).then(info => {
+                this.listData = info.data
+                this.total = info.total_count
+            })
         },
         addUser () {
-            console.log('点击新增用户')
             this.$router.push('/market/add')
         },
-        addStudent () {
+        addStudent (items) {
+            const _this = this
+            console.log('当前this', this)
             this.$confirm({
                 title: '请确认',
                 content: '是否添加到学员',
                 okText: '确认',
                 cancelText: '取消',
                 onOk() {
-                console.log('确定');
+                    _this.$router.push('/course/add')
                 },
                 onCancel() {
                 console.log('Cancel');

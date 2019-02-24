@@ -5,7 +5,7 @@
             <a-form layout='vertical' :form="formData">
                     
                 <a-form-item label='姓名'>
-                    <a-input v-model="formData.name" placeholder='请输入' />
+                    <a-input v-model="formData.real_name" placeholder='请输入' />
                 </a-form-item>
 
                 <a-form-item label='年龄'>
@@ -28,34 +28,31 @@
                 </a-form-item>
     
                 <a-form-item label='跟进状态：'>
-                    <a-textarea v-model="formData.note1" placeholder="每次跟进都会记录，请直接填写当前记录" :autosize="{ minRows: 2, maxRows: 6 }" />
+                    <a-textarea v-model="formData.status" placeholder="每次跟进都会记录，请直接填写当前记录" :autosize="{ minRows: 2, maxRows: 6 }" />
                 </a-form-item>
 
                 <a-form-item label='跟进顾问：'>
-                    <a-select defaultValue="" v-model="formData.note2">
-                        <a-select-option value="男">新用户</a-select-option>
-                        <a-select-option value="女">老用户</a-select-option>
-                    </a-select>
+                    <a-input type="text" v-model="formData.adviser" placeholder='请输入' />
                 </a-form-item>
 
                 <a-form-item label='是否有效：'>
-                    <a-select v-model="formData.note3">
-                        <a-select-option value="是">是</a-select-option>
-                        <a-select-option value="否">否</a-select-option>
+                    <a-select :defaultValue="formData.is_valid" v-model="formData.is_valid">
+                        <a-select-option value="1">是</a-select-option>
+                        <a-select-option value="0">否</a-select-option>
                     </a-select>
                 </a-form-item>
 
                 <a-form-item label='是否到访：'>
-                    <a-select v-model="formData.note4">
-                        <a-select-option value="是">是</a-select-option>
-                        <a-select-option value="否">否</a-select-option>
+                    <a-select :defaultValue="formData.is_visited" v-model="formData.is_visited">
+                        <a-select-option value="1">是</a-select-option>
+                        <a-select-option value="0">否</a-select-option>
                     </a-select>
                 </a-form-item>
 
                 <a-form-item label='是否成交：'>
-                    <a-select v-model="formData.note5">
-                        <a-select-option value="是">是</a-select-option>
-                        <a-select-option value="否">否</a-select-option>
+                    <a-select :defaultValue="formData.is_deal" v-model="formData.is_deal">
+                        <a-select-option value="1">是</a-select-option>
+                        <a-select-option value="0">否</a-select-option>
                     </a-select>
                 </a-form-item>
 
@@ -73,23 +70,42 @@
 </template>
 
 <script>
+    import { cloneDeep } from 'lodash'
     export default {
+        props: {
+            editFormData: {
+                type: Object
+            }
+        },
         data() {
             return {
                 checkNick: false,
                 formData: {
-                    name: '',
+                    adviser: '',
                     age: '',
-                    sex: '',
-                    phone: '',
+                    create_time: '',
+                    id: '',
+                    is_deal: '',
+                    is_valid: '',
+                    is_visited: '',
+                    money: '',
                     note: '',
-                    note1: '',
-                    note2: '',
-                    note3: '',
-                    note4: '',
-                    note5: '',
-                    money: ''
+                    phone: '',
+                    real_name: '',
+                    sex: ''
                 }
+            }
+        },
+        mounted() {
+            this.formData = Object.assign(this.formData, this.editFormData)
+            this.formData.is_deal = JSON.stringify(this.formData.is_deal)
+            this.formData.is_valid = JSON.stringify(this.formData.is_valid)
+            this.formData.is_visited = JSON.stringify(this.formData.is_visited)
+            this.formData.money = this.formData.money/100
+        },
+        watch: {
+            editFormData: function (val, oldVal) {
+                this.formData = Object.assign(this.formData, val)
             }
         },
         methods: {

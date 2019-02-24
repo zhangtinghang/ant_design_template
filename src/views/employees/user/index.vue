@@ -2,15 +2,15 @@
     <div class="user-weaaper">
         <div class="form-search">
             <div class="form">
-                <a-form layout='inline' :form="formData">
+                <a-form layout='inline'>
                     <template>
                         <a-form-item label='用户查询：'>
-                            <a-input v-model="formData.selectData" placeholder='请输入'> </a-input>
+                            <a-input v-model="selectData" placeholder='请输入'> </a-input>
                         </a-form-item>
 
                         <a-form-item>
                             <a-button 
-                                @click="selectData"
+                                @click="selectDataHandle"
                                 type='primary'
                                 htmlType='submit'>
                                 查询
@@ -25,17 +25,22 @@
         </div>
         <div class="wapper">
             <a-table :columns="columns" :pagination="false" :dataSource="data" :scroll="{ x: 1500}">
+                <div slot="time" slot-scope="text, record">
+                    {{ text*1000 | moment("YYYY年MM月DD日")}}
+                </div>
                 <div slot="change" slot-scope="text, record">
-                    <a-popconfirm title="确定禁用？" okText="确定" cancelText="取消" @confirm="carouselStop"><span class="changeItem">禁用</span></a-popconfirm> <span class="changeItem" @click="carouselEdit">修改</span> <a-popconfirm title="确定禁用？" okText="确定" cancelText="取消" @confirm="carouselDelete"><span class="changeItem" style="color: red;">删除</span></a-popconfirm>
+                    <a-popconfirm v-if="record.is_banned === 0" title="确认禁用？" okText="确定" cancelText="取消" @confirm="carouselStop(record)"><span class="changeItem">禁用</span></a-popconfirm>
+                    <span v-else class="changeItem" @click="carouselStart(record)">启用</span>
+                    <a-popconfirm title="确认删除？" okText="确定" cancelText="取消" @confirm="carouselDelete(record)"><span class="changeItem" style="color: red;">删除</span></a-popconfirm>
                 </div>
             </a-table>
         </div>
         <div class="footer-pg">
                 <div class="footer-pgLeft">
-                    <span>共400条记录 第 1 / 80页</span>
+                    <span>共{{total}}条记录 第 {{currentNum}} / {{totalNum}}页</span>
                 </div>
                 <div class="footer-pgRight">
-                    <a-pagination @showSizeChange="onShowSizeChange" :defaultCurrent="1" :total="500" />
+                    <a-pagination @change="onShowSizeChange" :defaultCurrent="1" :total="total" />
                 </div>
         </div>
     </div>
@@ -45,78 +50,107 @@
 // 表格数据
 const columns = [{
   title: '编号',
-  dataIndex: 'number',
+  dataIndex: 'id',
+  align: 'center'
 }, {
   title: '姓名',
-  dataIndex: 'name',
+  dataIndex: 'real_name',
+  align: 'center'
 }, {
   title: '性别',
-  dataIndex: 'gender',
+  dataIndex: 'sex',
+  align: 'center'
 }, {
-    title: '联系方式',
-  dataIndex: 'time',
+  title: '联系方式',
+  dataIndex: 'phone',
+  align: 'center'
 },{
   title: '职位',
-  dataIndex: 'phone',
+  dataIndex: 'position',
+  align: 'center'
 },{
   title: '录入时间',
-  dataIndex: 'note'
+  dataIndex: 'create_time',
+  scopedSlots: { customRender: 'time'},
+  align: 'center',
 },{
   title: '操作',
   dataIndex: 'operation',
-  scopedSlots: { customRender: 'change'}
+  scopedSlots: { customRender: 'change'},
+  align: 'center'
 }];
-
-const data = [];
-for (let i = 0; i < 10; i++) {
-  data.push({
-    key: i,
-    number: i,
-    name: `Edward King ${i}`,
-    gender:'男',
-    time: '2018/08/07 12:21',
-    phone: '123141515',
-    note: '这是一些备注信息这是一些备注信息这是一些备注信息这是一些备注信息这是一些备注信息这是一些备注信息这是一些备注信息',
-    state:'目前跟进状态目前跟进状态目前跟进状态目前跟进状态目前跟进状态',
-    user:'张三',
-    effective:'否',
-    visit: '否',
-    deal: '是',
-    money: '50'
-  });
-}
+import { getUser } from '@/api/user'
+import { deleteEmployees, updateEmployees, selectEmployees } from '@/api/employees'
 export default {
     data () {
         return {
             form: null,
-            data,
+            data: [],
             columns,
-            formData: {
-                selectData: ''
-            }
+            selectData: '',
+            total: 1,
+            currentNum: 1,
+            pageNum: 10
+        }
+    },
+    created() {
+        this.getToUser({offset: 0, limit: 10})
+    },
+    computed: {
+        totalNum() {
+            return Math.ceil(this.total/this.pageNum)
         }
     },
     methods: {
-        onShowSizeChange(current, pageSize) {
-            console.log(current, pageSize);
+        getToUser(data) {
+            let getData = Object.assign({}, {enable:-1, token:'12'}, data)
+            getUser(getData).then((info) => {
+                this.data = info.data
+                this.total = info.total_count
+            })
         },
-        carouselStop () {
-            console.log('轮播图状态修改')
+        onShowSizeChange(page, pageSize) {
+            this.currentNum  = page
+            this.pageNum = pageSize
+            this.getToUser({offset: (page-1)*pageSize, limit: 10})
         },
-        carouselStart () {
-            console.log('轮播图状态修改')
+        carouselStop (record) {
+            record.is_banned = 1
+            this.modifyUser(record)
         },
-        carouselEdit () {
-            console.log('轮播图编辑')
+        carouselStart (record) {
+            record.is_banned = 0
+            this.modifyUser(record)
         },
-        carouselDelete () {
-            console.log('轮播图删除')
+        carouselDelete (record) {
+            const id = record.id
+            deleteEmployees(id).then((delInfo) => {
+                if(delInfo.success) {
+                    this.$message.success(`删除信息成功.`)
+                    this.getToUser({offset: (this.currentNum-1) * this.pageNum, limit: 10})
+                }
+            })
         },
-        selectData () {
-            console.log('查询')
+        modifyUser (info) {
+            let {id, real_name, sex, phone, position, perm, is_banned} = info
+            updateEmployees({id, real_name, sex, phone, position, perm, is_banned}).then((upData) => {
+                if(upData.success) {
+                    this.$message.success(`修改状态成功.`)
+                    this.getToUser({offset: (this.currentNum-1) * this.pageNum, limit: 10})
+                }
+            })
+        },
+        selectDataHandle () {
+            console.log('点击查询')
+            let getData = Object.assign({}, {enable:-1, real_name: this.selectData}, {offset: 0, limit: 10, token: '12'})
+            selectEmployees(getData).then(info => {
+                this.data = info.data
+                this.total = info.total_count
+            })
+
         },
         addUser () {
-            console.log('新增用户')
+            this.$router.push({path: '/employees/add'})
         }
     },
 }

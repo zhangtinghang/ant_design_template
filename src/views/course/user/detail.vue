@@ -2,80 +2,138 @@
   <div class="ptf-course__container">
     <div class="ptf-course__title">
       <span>基础信息</span>
-      <span class="ptf-course__edit" @click="edtiDetail">编辑</span>
+      <!-- <span class="ptf-course__edit" @click="edtiDetail">编辑</span> -->
     </div>
     <div class="ptf-content__item">
-      <span>姓名：王小明</span>
-      <span>性别：男</span>
-      <span>电话：18782371231</span>
-      <span>状态：普通学员</span>
+      <span>姓名：{{formData.real_name}}</span>
+      <span>性别：{{formData.sex}}</span>
+      <span>电话：{{formData.phone}}</span>
+      <span>状态：{{formData.student_level}}</span>
     </div>
     <div class="ptf-course__title">
       <span>课程相关</span>
     </div>
 
     <div style="margin-right:10%">
-      <div class="ptf-content__item">
-        <span>项目名称：篮球</span>
-        <span>报课时间：2018-11-12</span>
-        <span>剩余节数：<span class="ptf-item__num" @click="edtiDetail">9</span></span>
-    </div>
-    <div class="ptf-content__item">
-        <span>项目名称：篮球</span>
-        <span>报课时间：2018-11-12</span>
-        <span>剩余节数：<span class="ptf-item__num" @click="edtiDetail">9</span></span>
-    </div>
-    <div class="ptf-content__item">
-        <span>项目名称：篮球</span>
-        <span>报课时间：2018-11-12</span>
-        <span>剩余节数：<span class="ptf-item__num" @click="edtiDetail">9</span></span>
-    </div>
+      <div v-for="courseItem in courseData" :key="courseItem.id" class="ptf-content__item">
+        <span>项目名称：{{courseItem.real_name}}</span>
+        <span>报课时间：{{courseItem['course.create_time'] | moment("YYYY年MM月DD日")}}</span>
+        <span>剩余节数：<span class="ptf-item__num" @click="edtiDetail(courseItem)">{{courseItem.rest_count}}</span></span>
+      </div>
+      <!-- <div class="ptf-content__item">
+          <span>项目名称：篮球</span>
+          <span>报课时间：2018-11-12</span>
+          <span>剩余节数：<span class="ptf-item__num" @click="edtiDetail">9</span></span>
+      </div> -->
     </div>
 
     <div class="ptf-course__title">
       <span>相关评价历史</span>
     </div>
-    <div class="ptf-content__eval">
-      <div class="ptf-content__item">
-        <span>项目名称：篮球</span>
-        <span>评价时间：2018-11-12</span>
-        <span>操作人：王大壮</span>
+    <div v-if="!commentData || commentData.length === 0">暂无</div>
+    <div v-else>
+      <div v-for="item in commentData" :key="item.id" class="ptf-content__eval">
+        <div class="ptf-content__item">
+          <span>项目名称：{{item['course.real_name']}}</span>
+          <span>评价时间：{{item.create_time}}</span>
+          <span>操作人：{{item.real_name}}</span>
+        </div>
+        <div><span>评论信息：</span>{{item.content}}</div>
       </div>
-      <div><span>评论信息：</span>孩子今天积极参与，孩子今天积极参与，孩子今天积极参与，孩子今天积极参与，孩子今天积极参与，孩子今天积极参与，孩子今天积极参与，孩子今天积极参与</div>
     </div>
-        <a-modal title="课程数量" :visible="courseVisible" okText="确定" cancelText="取消" @ok="handleOk" :confirmLoading="confirmLoading" @cancel="handleCancel">
-            <div>课程剩余：<a-input-number :min="1" :max="10" v-model="value" @change="onChange" /></div>
-            <div style="padding: 10px 0">课后评价：</div>
-            <div><a-textarea placeholder="请输入" v-model="eval" :autosize="{ minRows: 4, maxRows: 6 }" /></div>
-        </a-modal>
+
+    <a-modal title="课程数量" :visible="courseVisible" okText="确定" cancelText="取消" @ok="handleOk" :confirmLoading="confirmLoading" @cancel="handleCancel">
+        <div>课程剩余：<a-input-number :min="0" :max="courseItemData.rest_count? courseItemData.rest_count : 1" v-model="residueCourse"/></div>
+        <div style="padding: 10px 0">课后评价：</div>
+        <div><a-textarea placeholder="请输入" v-model="content" :autosize="{ minRows: 4, maxRows: 6 }" /></div>
+    </a-modal>
   </div>
 </template>
 <script>
+import { getUserCourse, getUserComment, updateUserComment } from '@/api/course'
+import { cloneDeep } from 'lodash'
 export default {
+  props: {
+    detailData: {
+      type: Object
+    }
+  },
   data () {
     return {
       courseVisible: false,
       confirmLoading: false,
-      value: 1,
-      eval: ''
+      residueCourse: 1,
+      content: '',
+      formData: {},
+      courseData: [],
+      commentData: [],
+      courseItemData: {}
     }
   },
+  created () {
+      this.formData = Object.assign({}, this.formData, this.detailData)
+      this.getToUserCourse()
+      this.getToUserComment()
+    },
+  watch: {
+        detailData: function (val, oldVal) {    
+          this.formData = Object.assign({}, this.formData, val)
+          this.getToUserCourse()
+          this.getToUserComment()
+        }
+    },
   methods: {
+    getToUserCourse () {
+      const user_id = this.formData.user_id
+      getUserCourse({user_id}).then((courseInfo) => {
+        console.log('获取到用户信息', courseInfo)
+        this.residueCourse = courseInfo.data.rest_count
+        this.courseData = courseInfo.data
+      })
+    },
+    getToUserComment() {
+      const user_id = this.formData.user_id
+      getUserComment({user_id}).then((commentInfo) => {
+        this.commentData = commentInfo.data
+      })
+    },
     changeDetail() {
       this.courseVisible = true
     },
-    handleOk(e) {
-      this.confirmLoading = true;
-      setTimeout(() => {
-        this.courseVisible = false;
-        this.confirmLoading = false;
-      }, 2000);
+    handleOk() {
+      this.confirmLoading = true
+      const {user_id, course_id, id, } = this.courseItemData
+      const content = this.content
+      const rest_count = this.residueCourse
+      const user_course_id = id
+      updateUserComment({user_id, course_id, content, user_course_id, rest_count}).then((commentInfo) => {
+        this.confirmLoading = false
+        if (commentInfo.success) {
+          this.$message.success(`添加评论成功.`)
+          this.courseVisible = false
+          this.courseItemData = {}
+          this.getToUserCourse()
+          this.getToUserComment()
+          this.content = ''
+        } else {
+            this.$message.error(`添加评论失败.`)
+        }
+      })
+      // setTimeout(() => {
+      //   this.courseVisible = false;
+      //   this.confirmLoading = false;
+      // }, 2000);
     },
     handleCancel(e) {
-      console.log('Clicked cancel button');
       this.courseVisible = false
+      this.confirmLoading = false
+      this.courseItemData = {}
+      this.content = ''
     },
-    edtiDetail () {
+    edtiDetail (courseItem) {
+      this.courseItemData = cloneDeep(courseItem)
+      console.log('课程信息', this.courseItemData)
+      this.residueCourse = this.courseItemData.rest_count - 1 < 0 ? 0 : this.courseItemData.rest_count - 1
       this.courseVisible = true
     }
   }

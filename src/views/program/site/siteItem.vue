@@ -6,29 +6,29 @@
                     <img :src="text" alt="轮播图片" />
                 </div>
                 <div slot="change" slot-scope="text, record">
-                    <div class="opera-item"><a-popconfirm title="确定修改？" v-if="record.enable === 1" okText="确定" cancelText="取消" @confirm="carouselStop"><a-button>停用</a-button></a-popconfirm><a-button type="primary" v-else @click="carouselStart">启用</a-button></div>
-                    <div class="opera-item"><a-button type="primary" @click="carouselEdit">编辑</a-button></div>
-                    <div class="opera-item"><a-popconfirm title="确定修改？" okText="确定" cancelText="取消" @confirm="carouselDelete"><a-button type="danger">删除</a-button></a-popconfirm></div>
+                    <div class="opera-item"><a-popconfirm title="确定修改？" v-if="record.enable === 1" okText="确定" cancelText="取消" @confirm="carouselStop(record)"><a-button>停用</a-button></a-popconfirm><a-button type="primary" v-else @click="carouselStart(record)">启用</a-button></div>
+                    <!-- <div class="opera-item"><a-button type="primary" @click="carouselEdit">编辑</a-button></div> -->
+                    <div class="opera-item"><a-popconfirm title="确定修改？" okText="确定" cancelText="取消" @confirm="carouselDelete(record)"><a-button type="danger">删除</a-button></a-popconfirm></div>
                 </div>
             </a-table>
         </div>
         <div class="footer-pg">
             <div class="footer-pgLeft">
-                <span>共400条记录 第 1 / 80页</span>
+                <span>共{{total}}条记录 第 {{currentNum}} / {{pageNum}}页</span>
             </div>
             <div class="footer-pgRight">
-                <a-pagination @showSizeChange="onShowSizeChange" :defaultCurrent="1" :total="500" />
+                <a-pagination @change="onShowSizeChange" :defaultCurrent="1" :total="total" />
             </div>
         </div>
     </div>
 </template>
 <script>
-import { getSite } from '@/api/site'
+import { getSite, deleteSite, updateSite } from '@/api/site'
 
 // 表格数据
 const columns = [{
   title: '编号',
-  dataIndex: 'number',
+  dataIndex: 'id',
   align: 'center'
 }, {
   title: '地点名称',
@@ -55,33 +55,67 @@ const columns = [{
 }];
 
 export default {
-    created () {
-        getSite().then((info) => {
-            console.log('获取地理位置信息成功', info.data)
-            this.listData = info.data
-        })
+    props: {
+        updateData: {
+            type: String
+        }
+    },
+    mounted () {
+        this.getToSite()
     },
     data () {
         return {
             listData: [],
-            columns
+            columns,
+            total: 1,
+            currentNum: 1,
+            pageNum: 1
         }
     },
+    watch: {
+      updateData: function (val, oldVal) {
+          console.log(this)
+          if (val === 'true') {
+              this.getToSite()
+          }
+      }
+    },
     methods: {
+        getToSite () {
+            getSite({enable: -1}).then((info) => {
+                this.listData = info.data
+            })
+        },
         onShowSizeChange(current, pageSize) {
-            console.log(current, pageSize);
+            this.currentNum  = current
+            this.pageNum = pageSize
         },
-        carouselStop () {
-            console.log('轮播图状态修改')
+        carouselStop (record) {
+            record.enable = 0
+            this.modifyCarousel(record)
         },
-        carouselStart () {
-            console.log('轮播图状态修改')
+        carouselStart (record) {
+            record.enable = 1
+            this.modifyCarousel(record)
         },
         carouselEdit () {
             console.log('轮播图编辑')
         },
-        carouselDelete () {
-            console.log('轮播图删除')
+        carouselDelete (record) {
+            const id = record.id
+            deleteSite(id).then((delInfo) => {
+                if(delInfo.success) {
+                    this.$message.success(`删除信息成功.`)
+                    this.getToSite()
+                }
+            })
+        },
+        modifyCarousel (info) {
+            let {id, real_name, intro, type, count_, money, location_ids, picture, enable} = info
+            updateSite({id, real_name, intro, type, count_, money, location_ids, picture, enable}).then((upData) => {
+                this.$message.success(`修改状态成功.`)
+                this.getToSite()
+            })
         }
     },
 }

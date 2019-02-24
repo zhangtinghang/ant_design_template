@@ -1,6 +1,11 @@
 <template>
   <div class="app-container">
+    <div>
+      <a-button :loading="loading" style="margin-left:16px;" type="primary" @click="uploadServer">导入</a-button>
+      <a-button style="margin-left:16px;" type="primary" @click="reload">重置</a-button>
+    </div>
     <upload-excel-component :on-success="handleSuccess" :before-upload="beforeUpload"/>
+    <p v-show="isResult">上传成功人数：{{succNum}}<br /> 上传失败名单:</p>
     <a-table size="middle" class="form-wapper" :columns="columns" :dataSource="tableData" :scroll="{ x: 1600}">
     </a-table>
   </div>
@@ -9,7 +14,8 @@
 <script>
 import UploadExcelComponent from '@/components/UploadExcel/index.vue'
 import Vue from 'vue'
-
+import { addBatchCourse } from '@/api/course'
+import { cloneDeep } from 'lodash'
 function changeTextItem (text, record, index) {
     try {
         if(text.length > 15){
@@ -23,17 +29,14 @@ function changeTextItem (text, record, index) {
     return text
 }
 const columns = [{
-  title: '编号',
-  dataIndex: 'number',
-}, {
   title: '姓名',
-  dataIndex: 'name',
-}, {
+  dataIndex: 'real_name',
+},{
+    title: '年龄',
+  dataIndex: 'age',
+},{
   title: '性别',
-  dataIndex: 'gender',
-}, {
-    title: '日期',
-  dataIndex: 'date',
+  dataIndex: 'sex',
 },{
   title: '电话',
   dataIndex: 'phone',
@@ -42,27 +45,8 @@ const columns = [{
   dataIndex: 'note',
   customRender : changeTextItem
 },{
-  title: '跟进状态',
-  dataIndex: 'state',
-},{
-  title: '跟进顾问',
-  dataIndex: 'user'
-},{
-  title: '是否有效',
-  dataIndex: 'effective',
-  width: '55px'
-},{
-  title: '是否到访',
-  dataIndex: 'visit',
-  width: '55px'
-},{
-  title: '是否成交',
-  dataIndex: 'deal',
-  width: '55px'
-},{
-  title: '成交金额',
-  dataIndex: 'money',
-  width: '55px'
+  title: '剩余课时',
+  dataIndex: 'rest_count'
 }];
 export default {
   name: 'UploadExcel',
@@ -70,47 +54,97 @@ export default {
   data() {
     return {
       tableData: [],
-      tableHeader: [],
-      data: null,
-      columns
+      columns,
+      loading: false,
+      isResult: false,
+      succNum: 0
     }
   },
   methods: {
+    uploadServer() {
+      let beforeData = cloneDeep(this.tableData)
+      beforeData.forEach(info => {
+        if (typeof info.phone === 'number') {
+          try {
+            info.phone = JSON.stringify(info.phone)
+          } catch (error) {}
+        }
+      })
+      const update = {}
+      update.data = beforeData
+      update.token = null
+      addBatchCourse(update).then((addInfo) => {
+        if (addInfo.success) {
+          this.isResult = true
+          try {
+            this.succNum = this.tableData.length - addInfo.fail_data.length
+          } catch (error) {}
+          this.tableData = addInfo.fail_data
+          this.$message.success('上传成功！')
+        } else {
+          this.$message.error('上传失败，请重试！')
+        }
+      })
+    },
+    reload() {
+
+    },
     beforeUpload(file) {
       const isLt1M = file.size / 1024 / 1024 < 1
-
       if (isLt1M) {
         return true
       }
-
-      this.$message({
-        message: 'Please do not upload files larger than 1m in size.',
-        type: 'warning'
-      })
+      this.$message.warning('上传的文件不能大于1M.')
       return false
     },
     handleSuccess({ results, header }) {
-      let childHeader = [];
-      //处理跟表头进状态信息
-      header.forEach(element => {
-        try {
-            if(typeof JSON.parse(element) === 'number'){
-                let obj = {}
-                obj.title = element;
-                obj.dataIndex= element;
-                obj.align = 'center';
-                obj.width = '200';
-                obj.customRender = changeTextItem;
-                childHeader.push(obj)
-            }
-        } catch (error) { }
+      let resultsFilter = []
+      results.forEach(element => {
+        let obj = {
+          "real_name": "",
+          "age": null,
+          "sex": "",
+          "phone": "",
+          "note": "",
+          "rest_count": 0,
+          "course_id": 35,
+          "location_id": 8
+        }
+        for (let i in element) {
+          let value = element[i]
+          let objKey = this.filterTextToWord(i)
+          obj[objKey] = value
+        }
+        resultsFilter.push(obj)
       })
-      let newColumns = this.columns;
-      newColumns[6].children = childHeader;
-      //需使用数据变异 才能响应数据变化
-      Vue.set(this.columns, 6, newColumns[6])
       //处理数据
-      this.tableData = results
+      this.tableData = resultsFilter
+    },
+    filterTextToWord(val){
+      switch (val) {
+        case '姓名':
+          val = 'real_name'
+          break;
+        case '年龄':
+          val = 'age'
+          break;
+        case '性别':
+          val = 'sex'
+          break;
+        case '电话':
+          val = 'phone'
+          break;
+        case '备注':
+          val = 'note'
+          break;
+        case '剩余课时':
+          val = 'rest_count'
+          break;
+        default:
+          val = 'none'
+          break;
+      }
+      return val
     }
   }
 }

@@ -6,9 +6,29 @@
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
+                label='帐号'
+                fieldDecoratorId="username"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入的帐号' }]}"
+                >
+                    <a-input placeholder='请输入' />
+                </a-form-item>
+
+                <a-form-item
+                :labelCol="formItemLayout.labelCol"
+                :wrapperCol="formItemLayout.wrapperCol"
+                label='密码'
+                fieldDecoratorId="pwd"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入的密码' }]}"
+                >
+                    <a-input type="password" placeholder='请输入' />
+                </a-form-item>
+
+                <a-form-item
+                :labelCol="formItemLayout.labelCol"
+                :wrapperCol="formItemLayout.wrapperCol"
                 label='姓名'
-                fieldDecoratorId="name"
-                :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入需要录入的姓名' }]}"
+                fieldDecoratorId="real_name"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入的姓名' }]}"
                 >
                     <a-input placeholder='请输入' />
                 </a-form-item>
@@ -17,9 +37,9 @@
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='性别'
-                fieldDecoratorId="gender"
+                fieldDecoratorId="sex"
                 >
-                    <a-select defaultValue="男" @change="handleChange">
+                    <a-select defaultValue="">
                         <a-select-option value="男">男</a-select-option>
                         <a-select-option value="女">女</a-select-option>
                     </a-select>
@@ -31,27 +51,28 @@
                 label='电话'
                 fieldDecoratorId="phone"
                 >
-                    <a-input type="number" placeholder='请输入需要录入的年龄' />
+                    <a-input type="number" placeholder='请录入电话' />
                 </a-form-item>
 
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
-                label='跟进状态：'
-                fieldDecoratorId="state"
+                label='职位'
+                fieldDecoratorId="position"
                 >
-                    <a-textarea placeholder="每次跟进都会记录，请直接填写当前记录" :autosize="{ minRows: 2, maxRows: 6 }" />
+                    <a-input type="text" placeholder='请录入职位' />
                 </a-form-item>
 
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='权限：'
-                fieldDecoratorId="deal"
+                fieldDecoratorId="perm"
                 >
-                     <a-select defaultValue="" @change="handleChange">
-                        <a-select-option value="是">是</a-select-option>
-                        <a-select-option value="否">否</a-select-option>
+                     <a-select defaultValue="">
+                        <a-select-option value="course">课程顾问</a-select-option>
+                        <a-select-option value="market">市场管理</a-select-option>
+                        <a-select-option value="admin">普通管理员</a-select-option>
                     </a-select>
                 </a-form-item>
                 
@@ -64,6 +85,7 @@
     </div>
 </template>
 <script>
+import { createEmployees } from '@/api/employees'
 const formItemLayout = {
   labelCol: { span: 4, offset: 4 },
   wrapperCol: { span: 8},
@@ -80,7 +102,14 @@ export default {
       this.form.validateFields(
         (err) => {
           if (!err) {
-            console.info('success', this.form.getFieldsValue())
+              let updateTem = this.form.getFieldsValue()
+                updateTem.username = `lt${updateTem.username}`
+              createEmployees(updateTem).then((updateInfo) => {
+                if (updateInfo.success) {
+                    this.$message.success(`上传信息成功.`)
+                    this.form.resetFields()
+                }
+              })
           }
         },
       )

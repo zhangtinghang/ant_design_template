@@ -24,10 +24,10 @@ export function updateSite (data) {
  })
 }
 
-export function deleteSite (data) {
+export function deleteSite (id) {
  return request({
    url: '/mini/location',
    method: 'delete',
-   data: data
+   data: {id}
  })
 }

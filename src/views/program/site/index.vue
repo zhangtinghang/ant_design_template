@@ -1,11 +1,11 @@
 <template>
     <div>
-        <a-tabs defaultActiveKey="1" @change="callback">
-            <a-tab-pane tab="地点列表" key="1">
-                <site-item></site-item>
+        <a-tabs defaultActiveKey="true" @change="callback">
+            <a-tab-pane tab="地点列表" key="true">
+                <site-item :updateData="update"></site-item>
             </a-tab-pane>
-            <a-tab-pane tab="新建地点" key="2" forceRender>
-                <site-add></site-add>
+            <a-tab-pane tab="新建地点" key="false" forceRender>
+                <site-add :updateData="update"></site-add>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -17,7 +17,7 @@ import siteAdd from './siteAdd'
 export default {
   data () {
     return {
-        
+        update: 'false'
     }
   },
   components: {
@@ -26,9 +26,9 @@ export default {
   },
   methods: {
     callback (key) {
-      console.log(key)
-    },
-  },
+      this.update = key
+    }
+  }
 }
 </script>
 

@@ -18,7 +18,7 @@
                         listType="picture-card"
                         class="avatar-uploader"
                         :showUploadList="false"
-                        action="http://112.74.215.22:5678/pe/file"
+                        :action="imageUpload"
                         :beforeUpload="beforeUpload"
                         :data="uploadData"
                         @change="uploadImg"
@@ -45,13 +45,24 @@
                 :labelCol="{ span: 5 }"
                 :wrapperCol="{ span: 12 }"
             >
-                <a-select v-model="formData.type" placeholder="请选择">
-                <a-select-option v-for="i in 25" :key="(i + 9).toString(36) + i">
-                    {{(i + 9).toString(36) + i}}
-                </a-select-option>
+                <a-select mode="multiple" v-model="formData.location_ids" @change="siteLocationChange" placeholder="请选择">
+                    <a-select-option v-for="item in siteInfo" :key="item.id">
+                        {{item.real_name}}
+                    </a-select-option>
                 </a-select>
             </a-form-item>
-
+            <a-form-item
+                label='类型'
+                :labelCol="{ span: 5 }"
+                :wrapperCol="{ span: 12 }"
+            >
+                <a-select style="width: 100%" v-model="formData.type">
+                    <a-select-option value="announcement">公告</a-select-option>
+                    <a-select-option value="activity">活动</a-select-option>
+                    <a-select-option value="information">资讯</a-select-option>
+                </a-select>
+            </a-form-item>
+            
             <a-form-item
             label='课程节数：'
             :labelCol="{ span: 5 }"
@@ -65,7 +76,7 @@
             :labelCol="{ span: 5 }"
             :wrapperCol="{ span: 12 }"
             >
-            <a-input v-model="formData.money" placeholder='请输入课程价格' />
+            <a-input v-model="formData.money" placeholder='课程价格单位：(元)' />
             </a-form-item>
             
             <a-form-item
@@ -92,6 +103,8 @@
 
 <script>
 import { createCourse } from '@/api/list'
+import { getSite } from '@/api/site'
+import { removeToken } from '@/utils/auth'
 export default {
     data () {
     return {
@@ -101,20 +114,36 @@ export default {
       formData: {
           real_name: '',
           intro: '',
-          type: [],
+          type: '',
           count_: '',
           money: '',
-          enable: ''
-      }
+          enable: '',
+          location_ids: []
+      },
+      siteInfo: '',
+      imageUpload: 'https://laite.pathfinder666.cn/upload',
+      imageView: 'https://laite.pathfinder666.cn/pe/'
     }
   },
   mounted () {
+      this.getTolocation ()
       this.uploadData = {
           token: this.$store.state.user.token,
           fileName: 'avatar'
       }
   },
   methods: {
+    getTolocation () {
+        getSite().then((siteInfo) => {
+            this.siteInfo = siteInfo.data
+        })
+    },
+    siteLocationChange (value) {
+        let selectArr = value.map(item => {
+            return item
+        })
+        this.formData.location_ids = selectArr
+    },
     beforeUpload (file) {
       const isLt4M = file.size / 1024 / 1024 < 4
       if (!isLt4M) {
@@ -126,20 +155,19 @@ export default {
         if (info.file.status !== 'uploading') {}
         if (info.file.status === 'done') {
             this.$message.success(`上传图片成功.`)
-            this.imageUrl = 'http://112.74.215.22/pe/'+info.file.response.filenames[0]
+            this.imageUrl = this.imageView+info.file.response.filenames[0]
         } else if (info.file.status === 'error') {
             if(info.file && info.file.error && info.file.error.status === 401) {
                 removeToken()
                 this.$router.push('/login')
                 this.$message.error(`未登录或帐号过期！`)
-            } else {
-                this.$message.error('上传图片失败!')
             }
         }
     },
     saveToData () {
         this.formData.picture = this.imageUrl
         this.formData.token = this.$store.state.user.token
+        this.formData.money = this.formData.money*100
         try {
             this.formData.enable = parseInt(this.formData.enable)            
         } catch (error) {}
@@ -149,6 +177,7 @@ export default {
             for (let i in this.formData) {
                 this.formData[i] = ''
             }
+            this.formData.location_ids = []
         }).catch((err) => {
             if (err) {
                 this.$message.success(`上传信息失败.`+err)

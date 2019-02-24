@@ -1,11 +1,11 @@
 <template>
     <div>
-        <a-tabs defaultActiveKey="1" @change="callback">
-            <a-tab-pane tab="视频管理" key="1">
-                <video-item></video-item>
+        <a-tabs defaultActiveKey="true" @change="callback">
+            <a-tab-pane tab="视频管理" key="true">
+                <video-item :updateData="update"></video-item>
             </a-tab-pane>
-            <a-tab-pane tab="上传视频资源" key="2" forceRender>
-                <video-add></video-add>
+            <a-tab-pane tab="上传视频资源" key="false" forceRender>
+                <video-add :updateData="update"></video-add>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -17,7 +17,7 @@ import videoAdd from './videoAdd'
 export default {
   data () {
     return {
-        
+        update: 'false'
     }
   },
   components: {
@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     callback (key) {
-      console.log(key)
+      this.update = key
     },
   },
 }

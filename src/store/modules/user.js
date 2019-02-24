@@ -1,10 +1,10 @@
 import { loginByUsername, getUserInfo } from '@/api/login'
-import { getToken, setToken } from '@/utils/auth'
+import { getToken, setToken, setUser, getUser } from '@/utils/auth'
 
 const user = {
   state: {
     token: getToken(),
-    user: '',
+    user: getUser(),
     roles: []
   },
 
@@ -29,12 +29,17 @@ const user = {
           commit('SET_TOKEN', token)
           commit('SET_USER', response)
           setToken(token)
+          setUser(response)
           resolve()
         }).catch(error => {
           reject(error)
         })
       })
     },
+    setRoles({ commit }, role){
+      commit('SET_ROLES', role) 
+    }
+    // getUserInfo({commit}, )
     // 登出
     // LogOut({ commit, state }) {
     //   return new Promise((resolve, reject) => {

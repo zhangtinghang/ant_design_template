@@ -4,7 +4,7 @@ export function getCoach (data) {
   return request({
     url: '/mini/teacher_mien',
     method: 'get',
-    data: data
+    params: data
   })
 }
 
@@ -24,10 +24,10 @@ export function updateCoach (data) {
  })
 }
 
-export function deleteCoach (data) {
+export function deleteCoach (id) {
  return request({
    url: '/mini/teacher_mien',
    method: 'delete',
-   data: data
+   data: {id}
  })
 }

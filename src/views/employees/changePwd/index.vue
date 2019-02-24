@@ -6,8 +6,8 @@
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
-                label='姓名'
-                fieldDecoratorId="name"
+                label='帐号'
+                fieldDecoratorId="username"
                 :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入需要录入的姓名' }]}"
                 >
                     <a-input placeholder='请输入' />
@@ -16,28 +16,28 @@
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
-                label='电话'
-                fieldDecoratorId="phone"
+                label='旧密码'
+                fieldDecoratorId="old_pwd"
                 >
-                    <a-input type="number" placeholder='请输入需要录入的电话' />
+                    <a-input type="password" placeholder='请输入旧密码' />
                 </a-form-item>
 
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='新密码'
-                fieldDecoratorId="newPass"
+                fieldDecoratorId="new_pwd"
                 >
-                    <a-input type="text" placeholder='请输入新密码' />
+                    <a-input type="password" placeholder='请输入新密码' />
                 </a-form-item>
 
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='确认新密码'
-                fieldDecoratorId="checkNewPass"
+                fieldDecoratorId="check_new_pwd"
                 >
-                    <a-input type="number" placeholder='请再次确认新密码' />
+                    <a-input type="password" placeholder='请再次确认新密码' />
                 </a-form-item>
                 
                 <div>
@@ -49,6 +49,7 @@
     </div>
 </template>
 <script>
+import { upUser } from '@/api/user'
 const formItemLayout = {
   labelCol: { span: 4, offset: 4 },
   wrapperCol: { span: 8},
@@ -66,6 +67,15 @@ export default {
         (err) => {
           if (!err) {
             console.info('success', this.form.getFieldsValue())
+            let { username, new_pwd, old_pwd} = this.form.getFieldsValue()
+            upUser({ username, new_pwd, old_pwd }).then((info) => {
+                if (info.success) {
+                    this.$message.success(`修改密码成功.`)
+                    this.form.resetFields()
+                } else {
+                    this.$message.success(`修改密码失败.`)
+                }
+            })
           }
         },
       )

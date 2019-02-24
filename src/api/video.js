@@ -16,18 +16,18 @@ export function createVideo (data) {
   })
 }
 
-export function updateVideo (token) {
+export function updateVideo (data) {
  return request({
    url: '/mini/video',
    method: 'put',
-   data: { token }
+   data: data
  })
 }
 
-export function deleteVideo (token) {
+export function deleteVideo (id) {
  return request({
    url: '/mini/video',
    method: 'delete',
-   data: { token }
+   data: { id }
  })
 }

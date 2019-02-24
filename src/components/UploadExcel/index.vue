@@ -1,15 +1,10 @@
 <template>
   <div>
-    <div>
-      <a-button :loading="loading" style="margin-left:16px;" type="primary" @click="uploadServer">导入</a-button>
-      <a-button :loading="loading" style="margin-left:16px;" type="primary" @click="reload">重置</a-button>
-    </div>
     <input id="excel-upload-input" ref="excel-upload-input" type="file" accept=".xlsx, .xls" @change="handleClick">
     <div id="drop" @drop="handleDrop" @dragover="handleDragover" @dragenter="handleDragover">
       Drop excel file here or
       <a-button :loading="loading" style="margin-left:16px;" type="primary" @click="handleUpload">click me</a-button>
     </div>
-    <!-- <p v-show="isResult">上传成功人数：{{succNum}}<br /> 上传失败名单:</p> -->
   </div>
 </template>
 
@@ -45,13 +40,13 @@ export default {
       if (this.loading) return
       const files = e.dataTransfer.files
       if (files.length !== 1) {
-        this.$message.error('Only support uploading one file!')
+        this.$message.error('只支持上传一个文件!')
         return
       }
       const rawFile = files[0] // only use files[0]
 
       if (!this.isExcel(rawFile)) {
-        this.$message.error('Only supports upload .xlsx, .xls, .csv suffix files')
+        this.$message.error('只支持上传 .xlsx, .xls, .csv 等文件！')
         return false
       }
       this.upload(rawFile)
@@ -127,10 +122,10 @@ export default {
     isExcel(file) {
       return /\.(xlsx|xls|csv)$/.test(file.name)
     },
-    uploadServer(){
+    // uploadServer(){
       //发送请求至服务器
       // let token = store.getters.token;
-      console.log('这是将要上传的数据',this.excelData.results)
+      // console.log('这是将要上传的数据',this.excelData.results)
       // bulkRegister(token, this.excelData.results).then(response => {
       //   this.excelData.results = [];
       //   const data = response;
@@ -153,16 +148,16 @@ export default {
       // }).catch(err =>{
       //   console.log(err)
       // })
-    },
-    reload(){
-      //重置
-      this.excelData.header = [];
-      this.excelData.results = [];
-      let header = [];
-      let results = [];
-      this.generateDate({header, results});
-      this.isResult = false;
-    }
+    // },
+    // reload(){
+    //   //重置
+    //   this.excelData.header = [];
+    //   this.excelData.results = [];
+    //   let header = [];
+    //   let results = [];
+    //   this.generateDate({header, results});
+    //   this.isResult = false;
+    // }
   }
 }
 </script>

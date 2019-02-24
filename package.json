@@ -1,5 +1,5 @@
 {
-  "name": "sports-management",
+  "name": "right_sports",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,10 +10,12 @@
   "dependencies": {
     "ant-design-vue": "^1.1.8",
     "axios": "^0.18.0",
+    "compression-webpack-plugin": "^2.0.0",
     "moment": "^2.23.0",
     "node-loader": "^0.6.0",
     "node-sass": "^4.10.0",
     "sass-loader": "^7.1.0",
+    "uglifyjs-webpack-plugin": "^2.1.1",
     "vue": "^2.5.17",
     "vue-i18n": "^8.3.2",
     "vue-moment": "^4.0.0",

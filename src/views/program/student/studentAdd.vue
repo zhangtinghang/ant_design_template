@@ -8,7 +8,7 @@
                         listType="picture-card"
                         class="avatar-uploader"
                         :showUploadList="false"
-                        action="http://112.74.215.22:5678/pe/file"
+                        :action="imageUpload"
                         :beforeUpload="beforeUpload"
                         :data="uploadData"
                         @change="uploadImg"
@@ -52,7 +52,9 @@ export default {
       formData: {
           enable: '',
           intro: ''
-      }
+      },
+      imageUpload: 'https://laite.pathfinder666.cn/upload',
+      imageView: 'https://laite.pathfinder666.cn/pe/'
     }
   },
   mounted () {
@@ -73,7 +75,7 @@ export default {
         if (info.file.status !== 'uploading') {}
         if (info.file.status === 'done') {
             this.$message.success(`上传图片成功.`)
-            this.imageUrl = 'http://112.74.215.22/pe/'+info.file.response.filenames[0]
+            this.imageUrl = this.imageView+info.file.response.filenames[0]
         } else if (info.file.status === 'error') {
             if(info.file && info.file.error && info.file.error.status === 401) {
                 removeToken()

@@ -9,6 +9,7 @@ export default {}
 </script>
 
 <style>
+/* @import "./font/csanty/csanty.css"; */
 body,html {
   margin: 0;
   padding: 0;

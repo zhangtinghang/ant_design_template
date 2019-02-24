@@ -1,4 +1,4 @@
-# sports-management
+# 莱特体育
 
 ## Project setup
 ```

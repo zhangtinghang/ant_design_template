@@ -1,9 +1,10 @@
 import request from '@/utils/request'
 
-export function getCourse () {
+export function getCourse (data) {
   return request({
     url: '/mini/course',
-    method: 'get'
+    method: 'get',
+    params: data
   })
 }
 
@@ -23,10 +24,10 @@ export function updateCourse (data) {
  })
 }
 
-export function deleteCourse (data) {
+export function deleteCourse (id) {
  return request({
    url: '/mini/course',
    method: 'delete',
-   data: data
+   data: {id}
  })
 }

@@ -1,5 +1,5 @@
-const TokenKey = 'ext-frontend-Token'
-const UserKey = 'ext-frontend-user'
+const TokenKey = 'SPORTS-frontend-Token'
+const UserKey = 'SPORTS-frontend-user'
 export function getToken () {
   return window.localStorage.getItem(TokenKey)
 }

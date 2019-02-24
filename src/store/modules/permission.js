@@ -38,22 +38,24 @@ const permission = {
   },
   mutations: {
     SET_ROUTERS: (state, routers) => {
-      state.addRouters = constantRouterMap
-      // state.addRouters = routers
-      // state.routers = constantRouterMap.concat(routers)
-      state.routers = constantRouterMap
+      // state.addRouters = constantRouterMap
+      state.addRouters = routers
+      state.routers = constantRouterMap.concat(routers)
+      // state.routers = constantRouterMap
     }
   },
   actions: {
-    GenerateRoutes ({ commit }, data) {
+    GenerateRoutes({ commit }, data) {
       return new Promise(resolve => {
         const { roles } = data
-        let accessedRouters = asyncRouterMap
-        // if (roles.indexOf('admin') >= 0) {
-        //   accessedRouters = asyncRouterMap
-        // } else {
-        //   accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
-        // }
+        let accessedRouters
+        if (roles.indexOf('admin') >= 0) {
+          accessedRouters = asyncRouterMap
+        } else if(roles.indexOf('管理员') >= 0) {
+          accessedRouters = asyncRouterMap
+        } else {
+          accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
+        }
         commit('SET_ROUTERS', accessedRouters)
         resolve()
       })

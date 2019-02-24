@@ -1,11 +1,11 @@
 <template>
     <div>
-        <a-tabs defaultActiveKey="1" @change="callback">
-            <a-tab-pane tab="课程列表" key="1">
-                <list-item></list-item>
+        <a-tabs defaultActiveKey="true" @change="callback">
+            <a-tab-pane tab="课程列表" key="true">
+                <list-item :updateData="update"></list-item>
             </a-tab-pane>
-            <a-tab-pane tab="新建课程" key="2" forceRender>
-                <list-add></list-add>
+            <a-tab-pane tab="新建课程" key="false" forceRender>
+                <list-add :updateData="update"></list-add>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -17,7 +17,7 @@ import listAdd from './listAdd'
 export default {
   data () {
     return {
-        
+        update: 'false'
     }
   },
   components: {
@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     callback (key) {
-      console.log(key)
+      this.update = key
     },
   },
 }

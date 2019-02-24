@@ -11,7 +11,7 @@
                         :data="uploadData"
                         @change="uploadVideo"
                         accept="video/*"
-                        action='http://112.74.215.22:5678/pe/file'>
+                        :action='imageUpload'>
                             <a-button>
                                 <a-icon type='upload' /> 上传视频
                             </a-button>
@@ -61,13 +61,13 @@ import { createVideo } from '@/api/video'
                     enable: '',
                     type: 'admin',
                     video: ''
-                }
+                },
+                imageUpload: 'https://laite.pathfinder666.cn/upload',
             }
         },
         mounted () {
             this.uploadData = {
-                token: this.$store.state.user.token,
-                fileName: ['video']
+                token: this.$store.state.user.token
             }
         },
         methods: {
@@ -78,10 +78,14 @@ import { createVideo } from '@/api/video'
                     this.formData.enable = parseInt(this.formData.enable)            
                 } catch (error) {}
                 createVideo(this.formData).then((data) => {
-                    this.$message.success(`上传成功.`);
+                    for (let i in this.formData) {
+                        this.formData[i] = ''
+                    }
+                    this.formData.type = 'admin'
+                    this.$message.success(`保存成功.`);
                 }).catch((err) => {
                     if (err) {
-                        console.log('上传失败', err)
+                        console.log('保存失败', err)
                     }
                 })
             },
@@ -96,7 +100,7 @@ import { createVideo } from '@/api/video'
                     this.$message.success(`上传视频成功.`)
                     this.formData.video = info.file.response.filenames[0]
                 } else if (info.file.status === 'error') {
-                    this.$message.error(`上传图片失败.`)
+                    this.$message.error(`上传视频失败.`)
       }
             }
         },

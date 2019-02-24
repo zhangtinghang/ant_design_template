@@ -39,7 +39,7 @@
                 label='电话'
                 fieldDecoratorId="phone"
                 >
-                    <a-input type="number" placeholder='请输入需要录入的年龄' />
+                    <a-input type="number" placeholder='请输入需要录入的手机号' />
                 </a-form-item>
 
                 <a-form-item
@@ -65,10 +65,7 @@
                 label='跟进顾问：'
                 fieldDecoratorId="adviser"
                 >
-                    <a-select defaultValue="">
-                        <a-select-option value="新用户">新用户</a-select-option>
-                        <a-select-option value="老用户">老用户</a-select-option>
-                    </a-select>
+                    <a-input type="text" placeholder='请输入跟进顾问信息' />
                 </a-form-item>
                 <a-form-item
                 :labelCol="formItemLayout.labelCol"
@@ -109,7 +106,7 @@
                 label='成交金额：'
                 fieldDecoratorId="money"
                 >
-                    <a-input type="number" placeholder='请输入' />
+                    <a-input type="number" placeholder='金额最小单位：（元）' />
                 </a-form-item>
                 <div>
                     <a-button type='primary' class="btn-item add-btn" @click="checkAdd">新增</a-button>
@@ -139,10 +136,15 @@ export default {
           if (!err) {
             console.info('success', this.form.getFieldsValue())
             let temData = this.form.getFieldsValue()
-            temData.token = this.$store.state.user.token
+            temData.update_time = new Date().getTime()
+            temData.money = temData.money*100
             createMarket(temData).then((data) => {
-                this.$message.success(`上传信息成功.`)
-                console.log('新增市场管理用户', data)
+                if (data.success) {
+                    this.$message.success(`上传信息成功.`)
+                    this.form.resetFields()
+                } else {
+                    this.$message.success(`上传信息失败.`)
+                }
             })
           }
         },

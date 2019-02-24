@@ -4,7 +4,7 @@ export function getStudent (data) {
   return request({
     url: '/mini/student_mien',
     method: 'get',
-    data: data
+    params: data
   })
 }
 
@@ -24,10 +24,10 @@ export function updateStudent (data) {
  })
 }
 
-export function deleteStudent (data) {
+export function deleteStudent (id) {
  return request({
    url: '/mini/student_mien',
    method: 'delete',
-   data: data
+   data: {id}
  })
 }

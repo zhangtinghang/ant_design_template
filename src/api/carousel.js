@@ -4,7 +4,7 @@ export function getCarousel (data) {
   return request({
     url: '/mini/picture',
     method: 'get',
-    data: data
+    params: data
   })
 }
 
@@ -16,18 +16,18 @@ export function createCarousel (data) {
   })
 }
 
-export function updateCarousel (token) {
+export function updateCarousel (data) {
  return request({
    url: '/mini/picture',
    method: 'put',
-   data: { token }
+   data: data
  })
 }
 
-export function deleteCarousel (token) {
+export function deleteCarousel (token, id) {
  return request({
    url: '/mini/picture',
    method: 'delete',
-   data: { token }
+   data: { token, id }
  })
 }

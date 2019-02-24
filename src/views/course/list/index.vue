@@ -1,11 +1,11 @@
 <template>
     <div>
-        <a-tabs defaultActiveKey="1" @change="callback">
-            <a-tab-pane tab="报课订单" key="1">
-                <card-item></card-item>
+        <a-tabs defaultActiveKey="true" @change="callback">
+            <a-tab-pane tab="报课订单" key="true">
+                <card-item :updateData="update"></card-item>
             </a-tab-pane>
-            <a-tab-pane tab="历史订单" key="2" forceRender>
-                <history-item></history-item>
+            <a-tab-pane tab="历史订单" key="false" forceRender>
+                <history-item :updateData="update"></history-item>
             </a-tab-pane>
         </a-tabs>
     </div>
@@ -16,6 +16,7 @@ import historyItem from './history'
 export default {
   data () {
     return {
+        update: 'false'
     }
   },
   components: {
@@ -24,7 +25,7 @@ export default {
   },
   methods: {
     callback (key) {
-      console.log(key)
+        this.update = key
     },
   },
 }
