@@ -201,9 +201,6 @@ export default {
                 this.total = info.total_count
             })
         },
-        resetBtn() {
-            console.log('重置')
-        },
         onShowSizeChange(page, pageSize) {
             this.currentNum  = page
             this.pageNum = pageSize
@@ -237,7 +234,6 @@ export default {
                 this.listData = info.data
                 this.total = info.total_count
             })
-            console.log('重置')
         },
         selectNoteBtn() {
             let getData = Object.assign({}, {note: this.noteSelect}, {offset: 0, limit: 10, token: '12'})
@@ -259,22 +255,19 @@ export default {
         },
         addStudent (items) {
             const _this = this
-            console.log('当前this', this)
             this.$confirm({
                 title: '请确认',
                 content: '是否添加到学员',
                 okText: '确认',
                 cancelText: '取消',
                 onOk() {
-                    _this.$router.push('/course/add')
+                    _this.$message.success('请直接在课程顾问新增用户！')
                 },
                 onCancel() {
-                console.log('Cancel');
                 }
             });
         },
         sendToDetail (text, record, index) {
-            console.log('店家', text, record, index)
             this.isDetail = true
             this.detailData = record
         },

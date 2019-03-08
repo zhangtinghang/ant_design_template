@@ -34,28 +34,28 @@ module.exports = {
     // webpack 配置，键值对象时会合并配置，为方法时会改写配置
     // https://cli.vuejs.org/guide/webpack.html#simple-configuration
     configureWebpack: (config) => {
-      if (env !== 'development' || env !== 'test') {
-        config.plugins.push(new CompressionWebpackPlugin({
-          algorithm: 'gzip',
-          test: new RegExp(`\\.(${productionGzipExtensions.join('|')})$`),
-          threshold: 10240,
-          minRatio: 0.8,
-        }));
-        config.plugins.push(
-          new UglifyJsPlugin({
-            uglifyOptions: {
-              compress: {
-                warnings: false,
-                drop_debugger: true, // console
-                drop_console: true,
-                pure_funcs:['console.log'] // 移除console
-              },
-            },
-            sourceMap: false,
-            parallel: true,
-          })
-        )
-    }
+    //   if (env !== 'development' || env !== 'test') {
+    //     config.plugins.push(new CompressionWebpackPlugin({
+    //       algorithm: 'gzip',
+    //       test: new RegExp(`\\.(${productionGzipExtensions.join('|')})$`),
+    //       threshold: 10240,
+    //       minRatio: 0.8,
+    //     }));
+    //     config.plugins.push(
+    //       new UglifyJsPlugin({
+    //         uglifyOptions: {
+    //           compress: {
+    //             warnings: false,
+    //             drop_debugger: true, // console
+    //             drop_console: true,
+    //             pure_funcs:['console.log'] // 移除console
+    //           },
+    //         },
+    //         sourceMap: false,
+    //         parallel: true,
+    //       })
+    //     )
+    // }
   },
     devServer: {
       // host: 'http://10.101.201'
