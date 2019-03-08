@@ -16,6 +16,14 @@ export function selectMarket (data) {
   })
 }
 
+export function selectNote (data) {
+  return request({
+    url: '/search/class_user_note',
+    method: 'get',
+    data: data
+  })
+}
+
 export function createMarket (data) {
   return request({
     url: '/market/user',

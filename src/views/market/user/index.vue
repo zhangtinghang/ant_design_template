@@ -6,9 +6,16 @@
                     <a-form-item label='用户查询：'>
                         <a-input placeholder='请输入' v-model="userSelect"></a-input>
                     </a-form-item>
-
                     <a-form-item>
                         <a-button type='primary' htmlType='submit' @click="selectBtn">查询</a-button>
+                        <a-button style="margin-left: 2%" htmlType='submit' @click="resetBtn">重置</a-button>
+                    </a-form-item>
+                    <a-form-item label='备注查询：'>
+                        <a-input placeholder='请输入' v-model="noteSelect"></a-input>
+                    </a-form-item>
+                    <a-form-item>
+                        <a-button type='primary' htmlType='submit' @click="selectNoteBtn">查询</a-button>
+                        <a-button style="margin-left: 2%" htmlType='submit' @click="resetNoteBtn">重置</a-button>
                     </a-form-item>
                 </a-form>
             </div>
@@ -103,14 +110,7 @@
     }, {
         title: '跟进顾问',
         dataIndex: 'adviser',
-        align: 'center',
-        customRender: (text, record, index) => {
-            if( text === 1) {
-                return '是'
-            } else {
-                return '否'
-            }
-        }
+        align: 'center'
     }, {
         title: '是否有效',
         dataIndex: 'is_valid',
@@ -164,7 +164,7 @@
         },
         align: 'center'
     }];
-import { getMarket, selectMarket } from '@/api/market'
+import { getMarket, selectMarket, selectNote } from '@/api/market'
 export default {
     created () {
         this.getToMarket({offset: 0, limit: 10})
@@ -176,6 +176,7 @@ export default {
             visible: false,
             isDetail: false,
             userSelect: '',
+            noteSelect: '',
             detailData: {},
             editFormData: {},
             total: 1,
@@ -200,6 +201,9 @@ export default {
                 this.total = info.total_count
             })
         },
+        resetBtn() {
+            console.log('重置')
+        },
         onShowSizeChange(page, pageSize) {
             this.currentNum  = page
             this.pageNum = pageSize
@@ -222,6 +226,30 @@ export default {
         selectBtn () {
             let getData = Object.assign({}, {enable:-1}, {real_name: this.userSelect}, {offset: 0, limit: 10, token: '12'})
             selectMarket(getData).then(info => {
+                this.listData = info.data
+                this.total = info.total_count
+            })
+        },
+        resetBtn() {
+            this.userSelect = ''
+            let getData = Object.assign({}, {enable:-1}, {real_name: ''}, {offset: 0, limit: 10, token: '12'})
+            selectMarket(getData).then(info => {
+                this.listData = info.data
+                this.total = info.total_count
+            })
+            console.log('重置')
+        },
+        selectNoteBtn() {
+            let getData = Object.assign({}, {note: this.noteSelect}, {offset: 0, limit: 10, token: '12'})
+            selectNote(getData).then(info => {
+                this.listData = info.data
+                this.total = info.total_count
+            })
+        },
+        resetNoteBtn() {
+            this.noteSelect = ''
+            let getData = Object.assign({}, {note: null}, {offset: 0, limit: 10, token: '12'})
+            selectNote(getData).then(info => {
                 this.listData = info.data
                 this.total = info.total_count
             })

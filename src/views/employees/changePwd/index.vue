@@ -8,7 +8,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='帐号'
                 fieldDecoratorId="username"
-                :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入需要录入的姓名' }]}"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入需要修改的帐号' }]}"
                 >
                     <a-input placeholder='请输入' />
                 </a-form-item>
@@ -18,6 +18,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='旧密码'
                 fieldDecoratorId="old_pwd"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                     <a-input type="password" placeholder='请输入旧密码' />
                 </a-form-item>
@@ -27,6 +28,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='新密码'
                 fieldDecoratorId="new_pwd"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                     <a-input type="password" placeholder='请输入新密码' />
                 </a-form-item>
@@ -36,6 +38,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='确认新密码'
                 fieldDecoratorId="check_new_pwd"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                     <a-input type="password" placeholder='请再次确认新密码' />
                 </a-form-item>
@@ -66,14 +69,17 @@ export default {
       this.form.validateFields(
         (err) => {
           if (!err) {
-            console.info('success', this.form.getFieldsValue())
-            let { username, new_pwd, old_pwd} = this.form.getFieldsValue()
-            upUser({ username, new_pwd, old_pwd }).then((info) => {
+            let { username, new_pwd, old_pwd, check_new_pwd } = this.form.getFieldsValue()
+            if (new_pwd !== check_new_pwd){
+                this.$message.error(`两次密码输入不一致.`)
+                return false
+            }
+            upUser({ username, new_pwd, old_pwd, check_new_pwd }).then((info) => {
                 if (info.success) {
                     this.$message.success(`修改密码成功.`)
                     this.form.resetFields()
                 } else {
-                    this.$message.success(`修改密码失败.`)
+                    this.$message.error(`修改密码失败.`)
                 }
             })
           }

@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <a-divider />
-            </div> 
+            </div>
             <div class="pagination-wapper">
                 <a-pagination @change="onShowSizeChange" :defaultCurrent="1" :total="total" />
             </div>

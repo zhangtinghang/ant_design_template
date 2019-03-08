@@ -26,6 +26,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='性别'
                 fieldDecoratorId="sex"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                     <a-select defaultValue="男">
                         <a-select-option value="男">男</a-select-option>
@@ -38,6 +39,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='电话'
                 fieldDecoratorId="phone"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请输入需要录入的手机号' }]}"
                 >
                     <a-input type="number" placeholder='请输入需要录入的手机号' />
                 </a-form-item>
@@ -47,8 +49,9 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='备注：'
                 fieldDecoratorId="note"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
-                    <a-textarea placeholder="请输入" :autosize="{ minRows: 2, maxRows: 6 }" />
+                    <a-textarea placeholder="请录入" :autosize="{ minRows: 2, maxRows: 6 }" />
                 </a-form-item>
 
                 <a-form-item
@@ -56,6 +59,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='跟进状态：'
                 fieldDecoratorId="status"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                     <a-textarea placeholder="每次跟进都会记录，请直接填写当前记录" :autosize="{ minRows: 2, maxRows: 6 }" />
                 </a-form-item>
@@ -64,6 +68,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='跟进顾问：'
                 fieldDecoratorId="adviser"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                     <a-input type="text" placeholder='请输入跟进顾问信息' />
                 </a-form-item>
@@ -72,6 +77,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='是否有效：'
                 fieldDecoratorId="is_valid"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                     <a-select defaultValue="">
                         <a-select-option value="1">是</a-select-option>
@@ -83,6 +89,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='是否到访：'
                 fieldDecoratorId="is_visited"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                      <a-select defaultValue="">
                         <a-select-option value="1">是</a-select-option>
@@ -94,6 +101,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='是否成交：'
                 fieldDecoratorId="is_deal"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                      <a-select defaultValue="">
                         <a-select-option value="1">是</a-select-option>
@@ -105,6 +113,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='成交金额：'
                 fieldDecoratorId="money"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                     <a-input type="number" placeholder='金额最小单位：（元）' />
                 </a-form-item>

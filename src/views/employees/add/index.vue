@@ -8,7 +8,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='帐号'
                 fieldDecoratorId="username"
-                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入的帐号' }]}"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入帐号' }]}"
                 >
                     <a-input placeholder='请输入' />
                 </a-form-item>
@@ -18,7 +18,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='密码'
                 fieldDecoratorId="pwd"
-                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入的密码' }]}"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入密码' }]}"
                 >
                     <a-input type="password" placeholder='请输入' />
                 </a-form-item>
@@ -28,7 +28,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='姓名'
                 fieldDecoratorId="real_name"
-                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入的姓名' }]}"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入姓名' }]}"
                 >
                     <a-input placeholder='请输入' />
                 </a-form-item>
@@ -38,6 +38,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='性别'
                 fieldDecoratorId="sex"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                     <a-select defaultValue="">
                         <a-select-option value="男">男</a-select-option>
@@ -50,6 +51,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='电话'
                 fieldDecoratorId="phone"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                     <a-input type="number" placeholder='请录入电话' />
                 </a-form-item>
@@ -59,6 +61,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='职位'
                 fieldDecoratorId="position"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                     <a-input type="text" placeholder='请录入职位' />
                 </a-form-item>
@@ -68,6 +71,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='权限：'
                 fieldDecoratorId="perm"
+                :fieldDecoratorOptions="{rules: [{ required: true, message: '请录入' }]}"
                 >
                      <a-select defaultValue="">
                         <a-select-option value="course">课程顾问</a-select-option>
