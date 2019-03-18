@@ -141,7 +141,6 @@ export default {
             })
         },
         selectDataHandle () {
-            console.log('点击查询')
             let getData = Object.assign({}, {enable:-1, real_name: this.selectData}, {offset: 0, limit: 10, token: '12'})
             selectEmployees(getData).then(info => {
                 this.data = info.data

@@ -11,7 +11,7 @@
             </a-form>
         </div>
         <div class="addUser">
-            <!-- <a-button type="primary" @click="addUser">新增用户</a-button> -->
+            <a-button type="primary" @click="addUser">新增用户</a-button>
         </div>
     </div>
 </template>

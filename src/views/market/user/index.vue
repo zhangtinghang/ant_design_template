@@ -261,7 +261,13 @@ export default {
                 okText: '确认',
                 cancelText: '取消',
                 onOk() {
-                    _this.$message.success('请直接在课程顾问新增用户！')
+                    // _this.$message.success('请直接在课程顾问新增用户！')
+                    const sendData = {}
+                    sendData.real_name = items.real_name
+                    sendData.age = items.age
+                    sendData.sex = items.sex
+                    sendData.phone = items.phone
+                    _this.$router.push({path: '/course/add', query: sendData})
                 },
                 onCancel() {
                 }

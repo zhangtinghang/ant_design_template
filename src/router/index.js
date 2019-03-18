@@ -80,12 +80,12 @@ export const asyncRouterMap = [
       name: '用户管理',
       meta: {roles: ['course', 'admin']}
     },
-    // {
-    //   path: '/course/add',
-    //   component: _import('course/add/index'),
-    //   name: '新增用户',
-    //   meta: {roles: ['course', 'admin']}
-    // },
+    {
+      path: '/course/add',
+      component: _import('course/add/index'),
+      name: '新增用户',
+      meta: {roles: ['course', 'admin']}
+    },
     {
       path: '/course/batch',
       component: _import('course/batch/index'),
