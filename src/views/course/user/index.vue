@@ -133,7 +133,6 @@ export default {
             this.getToCourseUser({ offset:(current-1) * pageSize, limit: pageSize})
         },
         comeToDetail (item) {
-            console.log(item)
             this.detailData = cloneDeep(item)
             this.visible = true
         },

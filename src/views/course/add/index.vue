@@ -49,7 +49,7 @@
                 :wrapperCol="formItemLayout.wrapperCol"
                 label='节数：'
                 fieldDecoratorId="rest_count"
-                :fieldDecoratorOptions="{rules: [{ required: true, enum:'number', min: 0, message: '请输入需要录入的剩余课程数' }]}"
+                :fieldDecoratorOptions="{rules: [{ required: true, min: 0, message: '请输入需要录入的剩余课程数' }]}"
 
                 >
                     <a-input type="number" placeholder='请输入剩余课程数' />
@@ -87,6 +87,12 @@ export default {
   },
   mounted() {
       if(this.$route && this.$route.query) {
+          if(this.$route.query && this.$route.query.age){
+              try {
+                  this.$route.query.age = parseInt(this.$route.query.age)
+                  this.$route.query.rest_count = parseInt(this.$route.query.rest_count)
+              } catch (error) {}
+          }
           this.form.setFieldsValue(this.$route.query)
       }
   },
@@ -100,15 +106,20 @@ export default {
             for(let item in oldFormData) {
                 formData[item] = oldFormData[item]
             }
+              try {
+                formData.rest_count = parseInt(formData.rest_count)
+                formData.age = parseInt(formData.age)
+                formData.note = formData.note || ''      
+              } catch (error) {}
               formData.course_id = 35
               formData.location_id = 8
               formData = [formData]
               let beforeData = cloneDeep(formData)
                 beforeData.forEach(info => {
                     if (typeof info.phone === 'number') {
-                    try {
-                        info.phone = JSON.stringify(info.phone)
-                    } catch (error) {}
+                        try {
+                            info.phone = JSON.stringify(info.phone)
+                        } catch (error) {}
                     }
                 })
                 const update = {}
@@ -116,8 +127,8 @@ export default {
                 update.token = null
                 addBatchCourse(update).then((addInfo) => {
                     if (addInfo.success) {
-                        if(addInfo.fail_data && addInfo.fail_data.length === 0) {
-                            this.$message.error('添加失败，请重试！')
+                        if(addInfo.fail_data && addInfo.fail_data.length !== 0) {
+                            this.$message.error('添加失败，请检查数据是否重复！')
                         } else {
                             this.form.resetFields()
                             this.$message.success(' 添加成功！')

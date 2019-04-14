@@ -18,7 +18,7 @@ export function selectMarket (data) {
 
 export function selectNote (data) {
   return request({
-    url: '/search/class_user_note',
+    url: '/search/market_user_note',
     method: 'get',
     data: data
   })
