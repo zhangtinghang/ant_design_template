@@ -24,10 +24,10 @@ export function updateCarousel (data) {
  })
 }
 
-export function deleteCarousel (token, id) {
+export function deleteCarousel ( id) {
  return request({
    url: '/mini/picture',
    method: 'delete',
-   data: { token, id }
+   data: { id }
  })
 }
